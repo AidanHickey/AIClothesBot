@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketplace - Wardrobe Wise</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -13,8 +14,8 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-primary">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
-                <img src="images/wardrobewise_logo.png" class="logo" alt="Wardrobe Wise Logo">
+            <a class="navbar-brand d-flex align-items-center" href="../">
+                <img src="{% static 'wardrobewise_logo.png' %}" class="logo" alt="Wardrobe Wise Logo">
             </a>
             <div class="navbar-nav ml-auto d-flex align-items-center">
                 <a href="#" class="nav-link text-white mr-3">
@@ -38,7 +39,7 @@
     <!-- Marketplace Content -->
     <div class="container mt-4">
         <h2 class="text-center my-4">Marketplace</h2>
-        <div class="row">
+        <div id = "loop" class="row">
             <!-- Placeholder clothing items -->
             {% for p in products %}
             <div class="col-md-3">
@@ -47,14 +48,66 @@
                         
                           <h5>  {{ p.productname }} </h5>
                           <img src="{{ p.image }}" width="200" height="300">
-                          <h6> {{p.price}}$ </h6>
+                          <h6> {{p.price}}$ </h6> 
                                
                     </div>
                 </div>
             </div>
             {% endfor %}
-        </div>
-    </div>       
+    
+
+             <script>
+
+                        var products;
+                        var theloop = document.getElementById("loop");
+                       
+                        fetch("https://fakestoreapi.com/products/category/men's clothing")
+                        .then(res => res.json())
+                        .then(data => {
+                         products = data;
+                        })
+                        .then(() => {
+                            for (var p in products) { 
+                                theloop.innerHTML += `
+                                                    <div id = "loop" class="col-md-3">
+                                                    <div class="card">
+                                                    <div class="card-body">
+                                                        
+                                                        <h5 style="overflow:hidden;max-width:300px;">  ${ products[p].title } </h5>
+                                                        <img src="${ products[p].image }" width="200" height="300">
+                                                         <h6> ${products[p].price}$ </h6> 
+                                                         </div>
+                                                         </div>
+                                                         </div>`;
+                                }
+                            });
+                            fetch("https://fakestoreapi.com/products/category/women's clothing")
+                        .then(res => res.json())
+                        .then(data => {
+                         products = data;
+                        })
+                        .then(() => {
+                            for (var p in products) { 
+                                theloop.innerHTML += `
+                                                    <div id = "loop" class="col-md-3">
+                                                    <div class="card">
+                                                    <div class="card-body">
+                                                        
+                                                        <h5>  ${ products[p].title } </h5>
+                                                        <img src="${ products[p].image }" width="200" height="300">
+                                                         <h6> ${products[p].price}$ </h6> 
+                                                         </div>
+                                                         </div>
+                                                         </div>`;
+                                }
+                            });
+
+                    </script>
+                               
+                    </div>
+                </div>
+            </div>
+                 
         
 
     <!-- Bootstrap JS -->
