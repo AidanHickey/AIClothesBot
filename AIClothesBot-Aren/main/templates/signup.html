@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Document metadata -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register for Wardrobe Wise</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../static/style.css" />
+
+  <style>
+    /* Global styles for HTML and body */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Body styles */
+body {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f8f9fa;
+}
+
+    /* Container styles */
+    .container {
+      width: 400px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      /* Shadow effect */
+    }
+
+    /* Form control styles */
+    .form-control {
+      max-width: 100%;
+      /* Ensure form controls fill the container */
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Registration form container -->
+  <body>
+    <!-- Wrapper for the entire signup form -->
+    <div class="d-flex flex-column align-items-center justify-content-center vh-100">
+      <!-- Logo above the heading -->
+      <div class="text-center mb-4">
+        <img src="../static/wardrobewise_logo.png" alt="Wardrobe Wise Logo" class="img-fluid" style="max-width: 300px; height: auto;" />
+      </div>    
+  <div class="container mt-5">
+    <h2>Sign up for Wardrobe Wise</h2>
+    <!-- Registration form -->
+    <form action="/signup" method="post" onsubmit="return validateForm()">
+      <!-- First Name input -->
+      <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" class="form-control" name="firstName" required />
+      </div>
+      <!-- Last Name input -->
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input type="text" class="form-control" name="lastName" required />
+      </div>
+      <!-- Email input -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" required />
+      </div>
+      <!-- Username input -->
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" required />
+      </div>
+      <!-- Password input -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required />
+      </div>
+      <!-- Confirm Password input -->
+      <div class="mb-3">
+        <label for="confirm-password" class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" id="confirm-password" required />
+      </div>
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary" name="submitFormButton" value="submit">Sign up</button>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <!-- Custom JavaScript code to handle email and password validation -->
+  <script>
+    function validateForm() {
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      var confirmPassword = document.getElementById("confirm-password").value;
+
+      // Regular expression for email validation
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // Regular expression for password validation (at least 8 characters including one uppercase letter, one lowercase letter, one number, and one special character)
+      var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+      // Validate email
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address");
+        return false;
+      }
+
+      // Validate password
+      if (!passwordRegex.test(password)) {
+        alert("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+        return false;
+      }
+
+      // Validate password match
+      if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return false;
+      }
+
+      return true; // If all validations pass, allow form submission
+    }
+  </script>
+
+
+</body>
+
+</html>
