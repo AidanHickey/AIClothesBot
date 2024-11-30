@@ -1,10 +1,13 @@
 from django.http import HttpResponse
-from django.shortcuts import render
-from .models import Products
+from django.shortcuts import render, redirect
+from .models import Products, Users
 import json
+from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
 import requests
 from django.core.paginator import Paginator
+
+from django.contrib import messages
 
 
 def index(request):
@@ -32,3 +35,42 @@ def marketplace(request):
     products = paginator.get_page(page)
     
     return render(request, 'marketplace.html', {'products':products})
+
+
+def signup(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        password2 = request.POST['password2']
+
+        if password == password2:
+            # Create User in Django built-in User model
+            if User.objects.filter(email=email).exists():
+                messages.info(request, 'Email is already taken')
+                return redirect('main:signup')  # No .html
+            elif User.objects.filter(username=username).exists():
+                messages.info(request, 'Username is already taken')
+                return redirect('main:signup')  # No .html
+            else:
+                user = User.objects.create_user(username=username, password=password, email=email)
+                user.save()
+
+                # Create the actual User profile that would be saved in our own database
+                user_object = User.objects.get(username=username)
+                new_user = Users.objects.create(
+                    username=user_object.username, 
+                    userid=user_object.id, 
+                    password=user_object.password, 
+                    email=user_object.email
+                )
+                new_user.save()
+
+                messages.info(request, 'User created')
+                return redirect('main:signup')  # Optionally redirect to login instead of signup
+
+        else:
+            messages.info(request, 'Passwords do not match')
+            return redirect('main:signup')  # No .html
+
+    return render(request, 'signup.html') 
