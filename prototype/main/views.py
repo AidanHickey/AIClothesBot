@@ -14,6 +14,7 @@ def index(request):
     return render(request, 'dashboard.html')
 
 def marketplace(request):
+    # grabbing stuffs from API into database if they're not there already
     response = requests.get("https://fakestoreapi.com/products/category/men's clothing")
     data = response.json()
     for p in data:
