@@ -67,24 +67,28 @@
 <!-- Feed Section -->
 <div class="col-lg-6">
     <h4 class="text-center">Feed</h4>
-    <div class="card">
+    {% for p in posts %}
+    <div class="card" style="height: auto">
         <!-- User Info and Post Text -->
-        <div class="card-header d-flex align-items-center">
-            <i class="fas fa-user-circle fa-2x mr-3"></i>
-            <div>
-                <p class="m-0"><strong>User123</strong> shared a photo</p>
-                <small class="text-muted">Wearing a beige blazer and black leather pants for todays event!</small>
-            </div>
+      
+        <div class="card-header d-flex align-items-center" style="width:100%">
+            <img src="{% static '/userimg/' %}{{p.userid.profileimg}}" width="20px" height="20px"/>
+            <p class="m-0"><strong>{{p.userid.firstname}} {{p.userid.lastname}}</strong></p>
         </div>
+        <div class="card-body">
+        <p class="m-0">{{p.content}}</p>
+    </div>
         <!-- Post Image -->
-        <img 
+        <div class="card-body">
+       <img 
             class="card-img-top" 
             src="{% static 'feed_img.png' %}" 
             alt="Card image cap" 
-            style="width: 100%; height: 400px; object-fit: cover;">
+            style="object-fit: cover;"> 
+        </div>
         <!-- Buttons -->
         <div class="card-body">
-            <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center">
                 <button class="btn btn-sm btn-outline-primary mx-2">
                     <i class="fas fa-thumbs-up"></i> Like
                 </button>
@@ -94,22 +98,48 @@
                 <button class="btn btn-sm btn-outline-success mx-2">
                     <i class="fas fa-share"></i> Share
                 </button>
-            </div>
         </div>
     </div>
+
+       
+    </div>
+    {% endfor %}
+  
 </div>
+
             <!-- Right Sidebar -->
-            <div class="col-lg-3">
-                <h5>Events</h5>
-                <ul class="list-group list-group-flush">
+    <div class="col-lg-3">
+        <h5>Events</h5>
+        <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span>Event Title</span>
                         <a href="#">See All</a>
                     </li>
                 </ul>
             </div>
+
+
         </div>
+        <div class="pagination"> 
+            <span class="step-links">
+                {% if posts.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ posts.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+                </span>
+        
+                {% if products.has_next %}
+                    <a href="?page={{ posts.next_page_number }}">next</a>
+                    <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div> 
     </div>
+
+
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .models import Products, Users
+from .models import Products, Users, Posts
 import json
 from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
@@ -11,7 +11,11 @@ from django.contrib import messages
 
 
 def index(request):
-    return render(request, 'dashboard.html')
+    post_list = Posts.objects.all()
+    paginator = Paginator(post_list, 10)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
+    return render(request, 'dashboard.html', {'posts':posts})
 
 def marketplace(request):
     # grabbing stuffs from API into database if they're not there already

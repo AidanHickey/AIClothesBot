@@ -76,11 +76,14 @@ class Users(models.Model):
     userid = models.AutoField(db_column='USERID', primary_key=True)  # Field name made lowercase.
     username = models.CharField(db_column='USERNAME', max_length=45, blank=True, null=True)  # Field name made lowercase.
     password = models.CharField(db_column='PASSWORD', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    firstname = models.CharField(db_column='FIRSTNAME', max_length=45, blank=True, null=True)
+    lastname = models.CharField(db_column='LASTNAME', max_length=45, blank=True, null=True)  # Field name made lowercase.
     email = models.CharField(db_column='EMAIL', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    profileimg = models.CharField(db_column='PROFILEIMG', max_length=300, blank=True, null=True)
     status = models.CharField(db_column='STATUS', max_length=45, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Users'
 
 
