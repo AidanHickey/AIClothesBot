@@ -66,6 +66,7 @@ class Products(models.Model):
     price = models.DecimalField(db_column='PRICE', max_digits=6, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
     category = models.CharField(db_column='CATEGORY', max_length=45, blank=True, null=True)  # Field name made lowercase.
     image = models.CharField(db_column='IMAGE', max_length=300, blank=True, null=True)  # Field name made lowercase.
+    rating = models.DecimalField(db_column='RATING', max_digits=2, decimal_places=1, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -81,6 +82,7 @@ class Users(models.Model):
     email = models.CharField(db_column='EMAIL', max_length=45, blank=True, null=True)  # Field name made lowercase.
     profileimg = models.CharField(db_column='PROFILEIMG', max_length=300, blank=True, null=True)
     status = models.CharField(db_column='STATUS', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    biography = models.CharField(db_column='BIOGRAPHY', max_length=500, blank=True, null=True)
 
     class Meta:
         managed = True

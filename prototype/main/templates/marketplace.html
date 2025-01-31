@@ -8,6 +8,8 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="{% static 'script.js' %}"></script>
 </head>
 <body>
 
@@ -42,24 +44,27 @@
         <div id = "loop" class="row">
             <!-- Placeholder clothing items -->
             {% for p in products %}
+             
             <div class="col-md-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div id= "product" class="card-body" " >
                         
                           <h5>  {{ p.productname }} </h5>
                           <img src="{{ p.image }}" width="200" height="300">
                           <h6> {{p.price}}$ </h6> 
-                               
+                          <div id = "rating{{p.productid}}" data-rating="{{p.rating }}"  > 
+                          </div>
+                          <script>printProductRating("{{ p.productid }}")</script>
+
+                          
+                       
                     </div>
                 </div>
             </div>
-            {% endfor %}
-    
-
-            
-                               
-                    </div>
-                </div>
+            {% endfor %}      
+                          
+        </div>
+    </div>
                  
                 <div class="pagination">
                     <span class="step-links">

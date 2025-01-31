@@ -149,7 +149,9 @@ body {
     font-size: 1em;
     color: #333;
 }
-
+.checked {
+    color: orange;
+  }
 
 
 
