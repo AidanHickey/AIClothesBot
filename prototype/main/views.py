@@ -79,3 +79,23 @@ def signup(request):
             return redirect('main:signup')  # No .html
 
     return render(request, 'signup.html') 
+
+def signin(request):
+    if request.method=="POST":
+        username=request.POST["username"]
+        password=request.POST["password"]
+        user=auth.authenticate(username=username, password=password) # check if a user with this info exists
+        if user is not None:  #log in if exsits and return to home page
+            auth.login(request, user)
+            return redirect('/')
+        else:
+            messages.info(request, "Invalid login")
+            return redirect("main:signin")
+
+    else:
+        return render(request, "signin.html")
+    
+
+def logout(request):
+    auth.logout(request)
+    return redirect("main:signin")
