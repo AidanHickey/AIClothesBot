@@ -72,7 +72,9 @@ def signup(request):
                 new_user.save()
 
                 messages.info(request, 'User created')
-                return redirect('main:signup')  # Optionally redirect to login instead of signup
+                user=auth.authenticate(username=username, password=password)
+                auth.login(request, user)
+                return redirect('main:settings')  # Optionally redirect to login instead of signup
 
         else:
             messages.info(request, 'Passwords do not match')
@@ -99,3 +101,19 @@ def signin(request):
 def logout(request):
     auth.logout(request)
     return redirect("main:signin")
+
+def settings(request):
+    user_profile = Users.objects.get(username=request.user.username)
+    if request.method=="POST":
+        email=request.POST["email"]
+        biography=request.POST["biography"]
+        image=request.FILES.get("image")
+
+        user_profile.email = email 
+        user_profile.biography=biography
+        if image:
+            user_profile.profileimg = image 
+            
+        user_profile.save()
+        return redirect('main:settings')
+    return render(request, "settings.html", {"user_profile": user_profile})

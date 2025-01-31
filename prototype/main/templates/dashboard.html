@@ -72,7 +72,8 @@
         <!-- User Info and Post Text -->
       
         <div class="card-header d-flex align-items-center" style="width:100%">
-            <img src="{% static '/userimg/' %}{{p.userid.profileimg}}" width="20px" height="20px"/>
+            <img src="{{ p.userid.profileimg.url }}" width="20px" height="20px" />
+
             <p class="m-0"><strong>{{p.userid.firstname}} {{p.userid.lastname}}</strong></p>
         </div>
         <div class="card-body">
