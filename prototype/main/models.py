@@ -72,6 +72,27 @@ class Products(models.Model):
         managed = False
         db_table = 'Products'
 
+class FavoritedProducts(models.Model):
+    favoritedproductsid = models.IntegerField(db_column='FavoritedProductsID', primary_key=True)  # Field name made lowercase.
+    userid = models.ForeignKey('Users', models.DO_NOTHING, db_column='UserID')  # Field name made lowercase.
+    productid = models.ForeignKey('Products', models.DO_NOTHING, db_column='ProductID')  # Field name made lowercase.
+    date = models.DateTimeField(db_column='Date', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'FavoritedProducts'
+
+
+class Followers(models.Model):
+    followerid = models.AutoField(db_column='FollowerID', primary_key=True)  # Field name made lowercase.
+    date = models.DateTimeField(db_column='Date', blank=True, null=True)  # Field name made lowercase.
+    fromuser = models.ForeignKey('Users', models.DO_NOTHING, db_column='FromUser')  # Field name made lowercase.
+    touser = models.ForeignKey('Users', models.DO_NOTHING, db_column='ToUser', related_name='followers_touser_set')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Followers'
+
 
 class Users(models.Model):
     userid = models.AutoField(db_column='USERID', primary_key=True)  # Field name made lowercase.
