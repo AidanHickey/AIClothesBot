@@ -9,7 +9,6 @@ from django.core.paginator import Paginator
 
 from django.contrib import messages
 
-
 def index(request):
     post_list = Posts.objects.all()
     paginator = Paginator(post_list, 10)
