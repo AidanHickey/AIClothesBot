@@ -6,17 +6,23 @@ from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
 import requests
 from django.core.paginator import Paginator
-
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 
 def index(request):
+    user_profile=None
+    if request.user.is_authenticated:
+        user_profile = Users.objects.get(username=request.user.username)
     post_list = Posts.objects.all()
     paginator = Paginator(post_list, 10)
     page = request.GET.get('page')
     posts = paginator.get_page(page)
-    return render(request, 'dashboard.html', {'posts':posts})
-
+    if user_profile:
+        return render(request, 'dashboard.html', {'posts':posts, 'user_profile': user_profile})
+    else:
+        return render(request, 'dashboard.html', {'posts':posts})
+    
 def marketplace(request):
     # grabbing stuffs from API into database if they're not there already
     response = requests.get("https://fakestoreapi.com/products/category/men's clothing")
@@ -71,7 +77,7 @@ def signup(request):
                 )
                 new_user.save()
 
-                messages.info(request, 'User created')
+                
                 user=auth.authenticate(username=username, password=password)
                 auth.login(request, user)
                 return redirect('main:settings')  # Optionally redirect to login instead of signup
@@ -97,11 +103,12 @@ def signin(request):
     else:
         return render(request, "signin.html")
     
-
+@login_required(login_url='main:signin')
 def logout(request):
     auth.logout(request)
     return redirect("main:signin")
 
+@login_required(login_url='main:signin')
 def settings(request):
     user_profile = Users.objects.get(username=request.user.username)
     if request.method=="POST":
@@ -115,5 +122,5 @@ def settings(request):
             user_profile.profileimg = image 
             
         user_profile.save()
-        return redirect('main:settings')
+        return redirect('main:index')
     return render(request, "settings.html", {"user_profile": user_profile})
