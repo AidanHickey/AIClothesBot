@@ -18,6 +18,7 @@ def index(request):
     return render(request, 'dashboard.html', {'posts':posts})
 
 def apigrabber(request):
+       # grabbing stuffs from API into database if they're not there already
     response = requests.get("https://fakestoreapi.com/products/category/men's clothing")
     data = response.json()
     for p in data:
@@ -33,8 +34,24 @@ def apigrabber(request):
             b.save()
     return render(request, 'index.html')
 
+def get_favorite(request,userid):
+    response=list(FavoritedProducts.objects.filter(userid=userid).values('productid'))
+    return JsonResponse(response, content_type='application/json', safe=False)
+
+def change_favorite(request,userid, productid):
+    count = FavoritedProducts.objects.filter(productid=productid,userid=userid).count()
+    if (count > 0):
+         FavoritedProducts.objects.filter(productid=productid,userid=userid).delete()
+    else:
+         user = Users.objects.get(userid=userid)
+         product = Products.objects.get(productid=productid)
+         FavoritedProducts.objects.create(productid=product,userid=user,date=datetime.datetime.now())
+
+    return JsonResponse(productid, content_type='application/json', safe=False)
+
+
 def marketplace(request):
-    # grabbing stuffs from API into database if they're not there already
+ 
     
 
     search_query = request.GET.get('search', '')
@@ -47,7 +64,7 @@ def marketplace(request):
     if tag:
         product_list = product_list.filter(tags__name__in=[tag])
 
-    all_tags = Tag.objects.all()  
+    
 
     paginator = Paginator(product_list, 10)
     page = request.GET.get('page')

@@ -34,6 +34,26 @@ class Likedposts(models.Model):
         managed = False
         db_table = 'LikedPosts'
 
+class FavoritedProducts(models.Model):
+    favoritedproductsid = models.AutoField(db_column='FavoritedProductsID', primary_key=True)  # Field name made lowercase.
+    userid = models.ForeignKey('Users', models.DO_NOTHING, db_column='UserID')  # Field name made lowercase.
+    productid = models.ForeignKey('Products', models.DO_NOTHING, db_column='ProductID')  # Field name made lowercase.
+    date = models.DateTimeField(db_column='Date', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'FavoritedProducts'
+
+class Followers(models.Model):
+    followerid = models.AutoField(db_column='FollowerID', primary_key=True)  # Field name made lowercase.
+    date = models.DateTimeField(db_column='Date', blank=True, null=True)  # Field name made lowercase.
+    fromuser = models.ForeignKey('Users', models.DO_NOTHING, db_column='FromUser')  # Field name made lowercase.
+    touser = models.ForeignKey('Users', models.DO_NOTHING, db_column='ToUser', related_name='followers_touser_set')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Followers'
+
 
 class Messages(models.Model):
     messageid = models.AutoField(db_column='MESSAGEID', primary_key=True)  # Field name made lowercase.
