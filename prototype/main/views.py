@@ -8,6 +8,7 @@ import requests
 from django.core.paginator import Paginator
 import datetime
 from django.contrib import messages
+from taggit.models import Tag  
 
 
 def index(request):
@@ -64,6 +65,7 @@ def marketplace(request):
     if tag:
         product_list = product_list.filter(tags__name__in=[tag])
 
+    all_tags = Tag.objects.all()  
     
 
     paginator = Paginator(product_list, 10)
