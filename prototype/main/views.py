@@ -8,7 +8,6 @@ import requests
 from django.core.paginator import Paginator
 import datetime
 from django.contrib import messages
-from django.core import serializers
 
 
 def index(request):
@@ -22,15 +21,15 @@ def apigrabber(request):
     response = requests.get("https://fakestoreapi.com/products/category/men's clothing")
     data = response.json()
     for p in data:
-        if not Products.objects.filter(productname=p['title'],price=p['price'],image=p['image'],category=p['category']):
-            b = Products(productname=p['title'],price=p['price'],image=p['image'],category=p['category'])
+        if not Products.objects.filter(productname=p['title'], price=p['price'], image=p['image'], category=p['category']):
+            b = Products(productname=p['title'], price=p['price'], image=p['image'], category=p['category'])
             b.save()
 
     response = requests.get("https://fakestoreapi.com/products/category/women's clothing")
     data = response.json()
     for p in data:
-        if not Products.objects.filter(productname=p['title'],price=p['price'],image=p['image'],category=p['category']):
-            b = Products(productname=p['title'],price=p['price'],image=p['image'],category=p['category'])
+        if not Products.objects.filter(productname=p['title'], price=p['price'], image=p['image'], category=p['category']):
+            b = Products(productname=p['title'], price=p['price'], image=p['image'], category=p['category'])
             b.save()
     return render(request, 'index.html')
 
@@ -38,41 +37,24 @@ def marketplace(request):
     # grabbing stuffs from API into database if they're not there already
     
 
+    search_query = request.GET.get('search', '')
+    if search_query:
+        product_list = Products.objects.filter(productname__icontains=search_query)
+    else:
+        product_list = Products.objects.all()
 
-    product_list = Products.objects.all()
+    tag = request.GET.get('tag', '')
+    if tag:
+        product_list = product_list.filter(tags__name__in=[tag])
+
+    all_tags = Tag.objects.all()  
+
     paginator = Paginator(product_list, 10)
     page = request.GET.get('page')
     products = paginator.get_page(page)
     
     return render(request, 'marketplace.html', {'products':products})
 
-def get_favorite(request,userid):
-    response=list(FavoritedProducts.objects.filter(userid=userid).values('productid'))
-    return JsonResponse(response, content_type='application/json', safe=False)
-
-def change_favorite(request,userid, productid):
-    count = FavoritedProducts.objects.filter(productid=productid,userid=userid).count()
-    if (count > 0):
-         FavoritedProducts.objects.filter(productid=productid,userid=userid).delete()
-    else:
-         user = Users.objects.get(userid=userid)
-         product = Products.objects.get(productid=productid)
-         FavoritedProducts.objects.create(productid=product,userid=user,date=datetime.datetime.now())
-
-    return JsonResponse(productid, content_type='application/json', safe=False)
-
-'''
-def favorite_product(request,productid):
-     count = FavoritedProducts.objects.filter(productid=productid,userid=request.user.id).count()
-     if (count > 0):
-         FavoritedProducts.objects.filter(productid=productid,userid=request.user.id).delete()
-     else:
-         user = Users.objects.get(userid=request.user.id)
-         product = Products.objects.get(productid=productid)
-         FavoritedProducts.objects.create(productid=product,userid=user,date=datetime.datetime.now())
-         
-     return  
-'''
 
 def signup(request):
     if request.method == "POST":

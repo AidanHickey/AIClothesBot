@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,12 +28,18 @@
                     <i class="fas fa-envelope"></i> Inbox
                 </a>
                 <div class="input-group mr-3">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-secondary" type="button">
-                            <i class="fas fa-search"></i>
+                    <form method="GET" action="{% url 'main:marketplace' %}">
+                        <input type="text" name="search" class="form-control" placeholder="Search">
+                        <select name="tag" class="form-control">
+                            <option value="">Filter by Tag</option>
+                            {% for tag in all_tags %}
+                                <option value="{{ tag.name }}" {% if tag.name == request.GET.tag %}selected{% endif %}>{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-secondary" type="submit">
+                            <i class="fas fa-search"></i> Search
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -73,27 +79,29 @@
             {% endif %}                 
         </div>
     </div>
-                 
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if products.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ products.previous_page_number }}">previous</a>
-                        {% endif %}
-                
-                        <span class="current">
-                            Page {{ products.number }} of {{ products.paginator.num_pages }}.
-                        </span>
-                
-                        {% if products.has_next %}
-                            <a href="?page={{ products.next_page_number }}">next</a>
-                            <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
-                        {% endif %}
-                    </span>
-                </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if products.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ products.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ products.number }} of {{ products.paginator.num_pages }}.
+            </span>
+
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}">next</a>
+                <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+
