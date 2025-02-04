@@ -8,6 +8,7 @@ import requests
 from django.core.paginator import Paginator
 
 from django.contrib import messages
+from taggit.models import Tag  
 
 
 def index(request):
@@ -22,25 +23,34 @@ def marketplace(request):
     response = requests.get("https://fakestoreapi.com/products/category/men's clothing")
     data = response.json()
     for p in data:
-        if not Products.objects.filter(productname=p['title'],price=p['price'],image=p['image'],category=p['category']):
-            b = Products(productname=p['title'],price=p['price'],image=p['image'],category=p['category'])
+        if not Products.objects.filter(productname=p['title'], price=p['price'], image=p['image'], category=p['category']):
+            b = Products(productname=p['title'], price=p['price'], image=p['image'], category=p['category'])
             b.save()
 
     response = requests.get("https://fakestoreapi.com/products/category/women's clothing")
     data = response.json()
     for p in data:
-        if not Products.objects.filter(productname=p['title'],price=p['price'],image=p['image'],category=p['category']):
-            b = Products(productname=p['title'],price=p['price'],image=p['image'],category=p['category'])
+        if not Products.objects.filter(productname=p['title'], price=p['price'], image=p['image'], category=p['category']):
+            b = Products(productname=p['title'], price=p['price'], image=p['image'], category=p['category'])
             b.save()
 
+    search_query = request.GET.get('search', '')
+    if search_query:
+        product_list = Products.objects.filter(productname__icontains=search_query)
+    else:
+        product_list = Products.objects.all()
 
-    product_list = Products.objects.all()
+    tag = request.GET.get('tag', '')
+    if tag:
+        product_list = product_list.filter(tags__name__in=[tag])
+
+    all_tags = Tag.objects.all()  
+
     paginator = Paginator(product_list, 10)
     page = request.GET.get('page')
     products = paginator.get_page(page)
-    
-    return render(request, 'marketplace.html', {'products':products})
 
+    return render(request, 'marketplace.html', {'products': products, 'search_query': search_query, 'all_tags': all_tags})
 
 def signup(request):
     if request.method == "POST":

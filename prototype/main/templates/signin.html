@@ -5,98 +5,160 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign In - Wardrobe Wise</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link
+      href="{% static 'assets/images/favicon.png' %}"
+      rel="icon"
+      type="image/png"
+    />
+    <title>Sign In - Social Book</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/uikit.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/tailwind.css' %}" />
   </head>
+
   <body class="bg-gray-100">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-          <img src="{% static 'wardrobewise_logo.png' %}" class="logo" alt="Wardrobe Wise Logo">
-        </a>
-        <div class="navbar-nav ml-auto d-flex align-items-center">
-          <a href="#" class="nav-link text-white mr-3">
-            <i class="fas fa-bell"></i> Notification
-          </a>
-          <a href="#" class="nav-link text-white mr-3">
-            <i class="fas fa-envelope"></i> Inbox
-          </a>
-          <div class="input-group mr-3">
-            <input type="text" class="form-control" placeholder="Search">
-            <div class="input-group-append">
-              <button class="btn btn-secondary" type="button">
-                <i class="fas fa-search"></i>
-              </button>
+    <div id="wrapper" class="flex flex-col justify-between h-screen">
+      <!-- header-->
+      <div class="bg-white py-4 shadow dark:bg-gray-800">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex items-center lg:justify-between justify-around">
+            <a href="trending.html">
+              <b><h1 style="font-size: 1.5rem">Social Book</h1></b>
+            </a>
+
+            <div
+              class="capitalize flex font-semibold hidden lg:block my-2 space-x-3 text-center text-sm"
+            >
+              <a
+                href="/signup"
+                class="bg-pink-500 pink-500 px-6 py-3 rounded-md shadow text-white"
+                >Register</a
+              >
             </div>
           </div>
-          <img src="{% static 'images/profile.png' %}" class="rounded-circle nav-user-icon" alt="User Profile Icon">
         </div>
       </div>
-    </nav>
 
-    <!-- Content -->
-    <div class="d-flex justify-content-center align-items-center min-vh-100">
-      <div class="lg:p-12 max-w-md lg:my-0 my-12 mx-auto p-6 space-y-6">
-        <h1 class="text-center lg:text-3xl text-xl font-semibold mb-6">Log in</h1>
-        <div>
-          <style>
-            h5 {
-              color: red;
-            }
-          </style>
-          {% for message in messages %}
-          <h5>{{message}}</h5>
-          {% endfor %}
+      <!-- Content-->
+      <div>
+        <div
+          class="lg:p-12 max-w-md max-w-xl lg:my-0 my-12 mx-auto p-6 space-y-"
+        >
+          <h1 class="lg:text-3xl text-xl font-semibold mb-6">Log in</h1>
+
+          <div>
+            <style>
+              h5 {
+                color: red;
+              }
+            </style>
+            {% for message in messages %}
+            <h5>{{message}}</h5>
+            {% endfor %}
+          </div>
+
+          <form action="" method="POST">
+            {% csrf_token %}
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              class="bg-gray-200 mb-2 shadow-none dark:bg-gray-800"
+              style="border: 1px solid #d3d5d8 !important"
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              class="bg-gray-200 mb-2 shadow-none dark:bg-gray-800"
+              style="border: 1px solid #d3d5d8 !important"
+            />
+            <!-- <div class="flex justify-between my-4">
+                        <div class="checkbox">
+                            <input type="checkbox" id="chekcbox1" checked>
+                            <label for="chekcbox1"><span class="checkbox-icon"></span>Remember Me</label>
+                        </div>
+                        <a href="#"> Forgot Your Password? </a>
+                    </div> -->
+            <button
+              type="submit"
+              class="bg-gradient-to-br from-pink-500 py-3 rounded-md text-white text-xl to-red-400 w-full"
+            >
+              Login
+            </button>
+            <div class="text-center mt-5 space-x-2">
+              <p class="text-base">
+                Not registered?
+                <a href="/signup" class=""> Create a account </a>
+              </p>
+            </div>
+          </form>
         </div>
-        <form action="" method="POST">
-          {% csrf_token %}
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            class="block w-full bg-gray-200 mb-2 shadow-none dark:bg-gray-800"
-            style="border: 1px solid #d3d5d8 !important"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            class="block w-full bg-gray-200 mb-2 shadow-none dark:bg-gray-800"
-            style="border: 1px solid #d3d5d8 !important"
-          />
-          <button
-  type="submit"
-  class="btn btn-link text-blue-500 w-full text-xl"
-  style="padding: 0; text-align: center;"
->
-  Login
-</button>
-        </form>
-        <div class="text-center mt-5 space-x-2">
-          <p class="text-base">
-            Not registered?
-            <a href="/signup" class="text-blue-500"> Create an account </a>
-          </p>
-        </div>
-        <div class="text-center mt-5 space-x-2">
-          <p class="text-base">
-            <a href="#" class="text-blue-500"> Continue as a guest </a>
-          </p>
+      </div>
+
+      <!-- Footer -->
+
+      <div class="lg:mb-5 py-3 uk-link-reset">
+        <div
+          class="flex flex-col items-center justify-between lg:flex-row max-w-6xl mx-auto lg:space-y-0 space-y-3"
+        >
+          <div class="flex space-x-2 text-gray-700 uppercase">
+            <a href="#"> About</a>
+            <a href="#"> Help</a>
+            <a href="#"> Terms</a>
+            <a href="#"> Privacy</a>
+          </div>
+          <p class="capitalize">© copyright 2020 by socol</p>
         </div>
       </div>
     </div>
 
-  </form>
-</div>
-</div>
-</div>
+    <!--<script>
+        
+        (function (window, document, undefined) {
+            'use strict';
+            if (!('localStorage' in window)) return;
+            var nightMode = localStorage.getItem('gmtNightMode');
+            if (nightMode) {
+                document.documentElement.className += ' dark';
+            }
+        })(window, document);
+    
+    
+        (function (window, document, undefined) {
+    
+            'use strict';
+    
+            // Feature test
+            if (!('localStorage' in window)) return;
+    
+            // Get our newly insert toggle
+            var nightMode = document.querySelector('#night-mode');
+            if (!nightMode) return;
+    
+            // When clicked, toggle night mode on or off
+            nightMode.addEventListener('click', function (event) {
+                event.preventDefault();
+                document.documentElement.classList.toggle('dark');
+                if (document.documentElement.classList.contains('dark')) {
+                    localStorage.setItem('gmtNightMode', true);
+                    return;
+                }
+                localStorage.removeItem('gmtNightMode');
+            }, false);
+    
+        })(window, document);
+    </script>-->
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+    <!-- Scripts
+    ================================================== -->
+    <script src="{% static 'assets/js/tippy.all.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/uikit.js' %}"></script>
+    <script src="{% static 'assets/js/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+  </body>
 </html>
-
