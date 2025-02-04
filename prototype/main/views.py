@@ -1,13 +1,14 @@
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
-from .models import Products, Users, Posts
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import FavoritedProducts, Products, Users, Posts
 import json
 from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
 import requests
 from django.core.paginator import Paginator
-
+import datetime
 from django.contrib import messages
+from django.core import serializers
 
 
 def index(request):
@@ -17,8 +18,7 @@ def index(request):
     posts = paginator.get_page(page)
     return render(request, 'dashboard.html', {'posts':posts})
 
-def marketplace(request):
-    # grabbing stuffs from API into database if they're not there already
+def apigrabber(request):
     response = requests.get("https://fakestoreapi.com/products/category/men's clothing")
     data = response.json()
     for p in data:
@@ -32,6 +32,11 @@ def marketplace(request):
         if not Products.objects.filter(productname=p['title'],price=p['price'],image=p['image'],category=p['category']):
             b = Products(productname=p['title'],price=p['price'],image=p['image'],category=p['category'])
             b.save()
+    return render(request, 'index.html')
+
+def marketplace(request):
+    # grabbing stuffs from API into database if they're not there already
+    
 
 
     product_list = Products.objects.all()
@@ -41,6 +46,33 @@ def marketplace(request):
     
     return render(request, 'marketplace.html', {'products':products})
 
+def get_favorite(request,userid):
+    response=list(FavoritedProducts.objects.filter(userid=userid).values('productid'))
+    return JsonResponse(response, content_type='application/json', safe=False)
+
+def change_favorite(request,userid, productid):
+    count = FavoritedProducts.objects.filter(productid=productid,userid=userid).count()
+    if (count > 0):
+         FavoritedProducts.objects.filter(productid=productid,userid=userid).delete()
+    else:
+         user = Users.objects.get(userid=userid)
+         product = Products.objects.get(productid=productid)
+         FavoritedProducts.objects.create(productid=product,userid=user,date=datetime.datetime.now())
+
+    return JsonResponse(productid, content_type='application/json', safe=False)
+
+'''
+def favorite_product(request,productid):
+     count = FavoritedProducts.objects.filter(productid=productid,userid=request.user.id).count()
+     if (count > 0):
+         FavoritedProducts.objects.filter(productid=productid,userid=request.user.id).delete()
+     else:
+         user = Users.objects.get(userid=request.user.id)
+         product = Products.objects.get(productid=productid)
+         FavoritedProducts.objects.create(productid=product,userid=user,date=datetime.datetime.now())
+         
+     return  
+'''
 
 def signup(request):
     if request.method == "POST":
