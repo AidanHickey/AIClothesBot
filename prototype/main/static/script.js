@@ -50,47 +50,57 @@ function printProductRating(id)
     }
    wrapper.innerHTML = myHTML;
 }
-   /* if (count >= 0 && count < 1)
-        {
-            document.getElementById('firstStar').className="fa fa-star ";
-            document.getElementById('secondStar').className="fa fa-star ";
-            document.getElementById('thirdStar').className="fa fa-star ";
-            document.getElementById('fourthStar').className="fa fa-star ";
-            document.getElementById('fifthStar').className="fa fa-star ";
+
+
+
+  function updateStage(userid) {
+    $.ajax({
+      url: `get_favorite/${userid}`, // if you don't have dynamic url
+      type: 'GET'
+    })
+    .done(response => {
+      const data = response;
+      for(var id in data) {
+        var productid = (data[id].productid);
+        console.log(productid);
+        if(document.getElementById(`favoriteBtn${productid}`)){
+        var wrapper = document.getElementById(`favoriteBtn${productid}`);
+        wrapper.innerHTML = "Unfavorite";
         }
-        if (count >= 1 && count < 2)
-            {
-                document.getElementById('firstStar').className="fa fa-star checked";
-                document.getElementById('secondStar').className="fa fa-star ";
-                document.getElementById('thirdStar').className="fa fa-star ";
-                document.getElementById('fourthStar').className="fa fa-star ";
-                document.getElementById('fifthStar').className="fa fa-star ";
-            }
-            (count >= 2 && count < 3)
-                {
-                    document.getElementById('firstStar').className="fa fa-star checked";
-                    document.getElementById('secondStar').className="fa fa-star checked";
-                    document.getElementById('thirdStar').className="fa fa-star ";
-                    document.getElementById('fourthStar').className="fa fa-star ";
-                    document.getElementById('fifthStar').className="fa fa-star ";
-                }
-                (count >= 3 && count < 4)
-                    {
-                        document.getElementById('firstStar').className="fa fa-star checked";
-                        document.getElementById('secondStar').className="fa fa-star checked";
-                        document.getElementById('thirdStar').className="fa fa-star checked";
-                        document.getElementById('fourthStar').className="fa fa-star ";
-                        document.getElementById('fifthStar').className="fa fa-star ";
-                    }
-                    if (count >= 4 && count < 5)
-                        {
-                            document.getElementById('firstStar').className="fa fa-star checked";
-                            document.getElementById('secondStar').className="fa fa-star checked";
-                            document.getElementById('thirdStar').className="fa fa-star checked";
-                            document.getElementById('fourthStar').className="fa fa-star checked";
-                            document.getElementById('fifthStar').className="fa fa-star ";
-                        }
-                    }*/
+        
+      }
+    })
+  }
+    
+  function onFavorite(id, userid) {
+    $.ajax({
+      url: `change_favorite/${id}/${userid}`, // if you don't have dynamic url
+      type: 'GET'
+    })
+    .done(response => {
+      const data = response;
+        console.log(id);
+        var wrapper = document.getElementById(`favoriteBtn${id}`);
+        if(wrapper.innerHTML == "Favorite"){
+        wrapper.innerHTML = "Unfavorite";
+        }
+        else wrapper.innerHTML = "Favorite";
+        
+      
+    })
+  }  
+
+
+/*function onFavorite(id, user)
+{   
+    var wrapper = document.getElementById(`favoriteBtn${id}`);
+    if (user=="AnonymousUser")
+    window.location.href='../signin';
+    else {
+    document.location.href =`${id}`;
+    updateStage(user.userid);
+    }
+};*/
 
 
 

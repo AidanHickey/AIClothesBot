@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'script.js' %}"></script>
 </head>
 <body>
@@ -27,12 +28,18 @@
                     <i class="fas fa-envelope"></i> Inbox
                 </a>
                 <div class="input-group mr-3">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-secondary" type="button">
-                            <i class="fas fa-search"></i>
+                    <form method="GET" action="{% url 'main:marketplace' %}">
+                        <input type="text" name="search" class="form-control" placeholder="Search">
+                        <select name="tag" class="form-control">
+                            <option value="">Filter by Tag</option>
+                            {% for tag in all_tags %}
+                                <option value="{{ tag.name }}" {% if tag.name == request.GET.tag %}selected{% endif %}>{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-secondary" type="submit">
+                            <i class="fas fa-search"></i> Search
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -41,6 +48,9 @@
     <!-- Marketplace Content -->
     <div class="container mt-4">
         <h2 class="text-center my-4">Marketplace</h2>
+       
+        
+
         <div id = "loop" class="row">
             <!-- Placeholder clothing items -->
             {% for p in products %}
@@ -52,41 +62,46 @@
                           <h5>  {{ p.productname }} </h5>
                           <img src="{{ p.image }}" width="200" height="300">
                           <h6> {{p.price}}$ </h6> 
-                          <div id = "rating{{p.productid}}" data-rating="{{p.rating }}"  > 
-                          </div>
-                          <script>printProductRating("{{ p.productid }}")</script>
+                          <div id = "rating{{p.productid}}" data-rating="{{p.rating }}"></div>
+                          <button id="favoriteBtn{{p.productid}}" onclick="onFavorite(`{{p.productid}}`,`{{request.user.id}}`)">Favorite</button>
+                          <script type="text/javascript">
+                          printProductRating("{{ p.productid }}");
+                          </script>
 
-                          
-                       
                     </div>
                 </div>
             </div>
             {% endfor %}      
-                          
+            {% if user.is_authenticated %}
+            <script type="text/javascript">
+                updateStage("{{user.id}}");
+            </script>
+            {% endif %}                 
         </div>
     </div>
-                 
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if products.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ products.previous_page_number }}">previous</a>
-                        {% endif %}
-                
-                        <span class="current">
-                            Page {{ products.number }} of {{ products.paginator.num_pages }}.
-                        </span>
-                
-                        {% if products.has_next %}
-                            <a href="?page={{ products.next_page_number }}">next</a>
-                            <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
-                        {% endif %}
-                    </span>
-                </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if products.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ products.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ products.number }} of {{ products.paginator.num_pages }}.
+            </span>
+
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}">next</a>
+                <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+
