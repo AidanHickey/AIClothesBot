@@ -34,10 +34,21 @@
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                <!-- </div>
-                <img src="images/profile.png" class="rounded-circle nav-user-icon" alt="User Profile Icon">
-            </div> -->
-        </div>
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if user_profile and user_profile.profileimg %}
+                                <img src="{{ user_profile.profileimg.url }}" class="rounded-circle nav-user-icon" alt="User Profile Icon" width="40px" height="40px">
+                            {% else %}
+                                <img src="/media/userimg/guestprofilepic.png" class="rounded-circle nav-user-icon" alt="Default Profile Icon" width="40px" height="40px">
+                            {% endif %}
+                        </a>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{% url 'main:settings' %}">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
     </nav>
 
     <!-- Main Content -->
@@ -72,7 +83,8 @@
         <!-- User Info and Post Text -->
       
         <div class="card-header d-flex align-items-center" style="width:100%">
-            <img src="{% static '/userimg/' %}{{p.userid.profileimg}}" width="20px" height="20px"/>
+            <img src="{{ p.userid.profileimg.url }}" width="20px" height="20px" />
+
             <p class="m-0"><strong>{{p.userid.firstname}} {{p.userid.lastname}}</strong></p>
         </div>
         <div class="card-body">
@@ -141,6 +153,7 @@
 
 
     <!-- Bootstrap JS -->
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
