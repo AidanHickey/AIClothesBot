@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import FavoritedProducts, Products, Users, Posts
+from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms
 import json
 from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.contrib import messages
 from taggit.models import Tag  
+from django.db.models import Q
 
 
 def index(request):
@@ -46,6 +47,16 @@ def apigrabber(request):
 def get_favorite(request,userid):
     response=list(FavoritedProducts.objects.filter(userid=userid).values('productid'))
     return JsonResponse(response, content_type='application/json', safe=False)
+
+def get_inbox(request,userid):
+    room = ChatRooms.objects.filter(Q(userone=userid) | Q(usertwo=userid))
+    data = []
+    for i in room:
+        message = Messages.objects.filter( (Q(fromuser=i.userone.userid) & Q(touser=i.usertwo.userid)) | (Q(fromuser=i.usertwo.userid) & Q(touser=i.userone.userid)) ).order_by('-created_at').values().first()
+        item = {'id': i.chatroomid, 'userOneID':i.userone.userid, 'userTwoID':i.usertwo.userid,'userOneName':i.userone.username,'userTwoName':i.usertwo.username, 'lastMessageSent': message['content']}
+        data.append(item)
+    return JsonResponse(data, content_type='application/json', safe=False)
+
 
 def change_favorite(request,userid, productid):
     count = FavoritedProducts.objects.filter(productid=productid,userid=userid).count()

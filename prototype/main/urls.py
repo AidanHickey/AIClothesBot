@@ -13,6 +13,7 @@ urlpatterns = [
     path("logout", views.logout, name="logout"),
     path("settings", views.settings, name="settings"),
     path("get_favorite/<int:userid>", views.get_favorite, name='get_favorite'),
+    path("get_inbox/<int:userid>", views.get_inbox, name='get_inbox'),
     path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

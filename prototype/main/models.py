@@ -55,17 +55,28 @@ class Followers(models.Model):
         db_table = 'Followers'
 
 
+class ChatRooms(models.Model):
+    chatroomid = models.AutoField(db_column='ChatRoomID', primary_key=True)  # Field name made lowercase.
+    userone = models.ForeignKey('Users', models.DO_NOTHING, db_column='userOne')  # Field name made lowercase.
+    usertwo = models.ForeignKey('Users', models.DO_NOTHING, db_column='userTwo', related_name='chatrooms_usertwo_set')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'ChatRooms'
+
+
+
 class Messages(models.Model):
     messageid = models.AutoField(db_column='MESSAGEID', primary_key=True)  # Field name made lowercase.
     content = models.CharField(db_column='CONTENT', max_length=300, blank=True, null=True)  # Field name made lowercase.
     fromuser = models.ForeignKey('Users', models.DO_NOTHING, db_column='FROMUSER')  # Field name made lowercase.
     touser = models.ForeignKey('Users', models.DO_NOTHING, db_column='TOUSER', related_name='messages_touser_set')  # Field name made lowercase.
     created_at = models.DateTimeField(db_column='CREATED_AT', blank=True, null=True)  # Field name made lowercase.
+    chatroomid = models.ForeignKey(ChatRooms, models.DO_NOTHING, db_column='ChatRoomID')  # Field name made lowercase.
 
     class Meta:
         managed = False
         db_table = 'Messages'
-
 
 class Posts(models.Model):
     postid = models.AutoField(db_column='POSTID', primary_key=True)  # Field name made lowercase.
