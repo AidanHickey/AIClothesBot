@@ -21,6 +21,9 @@
             </a>
             <!-- Navbar Right Side -->
             <div class="navbar-nav ml-auto d-flex align-items-center">
+                <a href={% url 'main:upload' %} class="nav-link text-white mr-3">
+                    <i class="fas fa-upload"></i> Upload Post
+                </a>
                 <a href="#" class="nav-link text-white mr-3">
                     <i class="fas fa-bell"></i> Notification
                 </a>
@@ -75,49 +78,67 @@
                 </ul>
             </div>
     
-<!-- Feed Section -->
-<div class="col-lg-6">
-    <h4 class="text-center">Feed</h4>
-    {% for p in posts %}
-    <div class="card" style="height: auto">
-        <!-- User Info and Post Text -->
-      
-        <div class="card-header d-flex align-items-center" style="width:100%">
-            <img src="{{ p.userid.profileimg.url }}" width="20px" height="20px" />
-
-            <p class="m-0"><strong>{{p.userid.firstname}} {{p.userid.lastname}}</strong></p>
-        </div>
-        <div class="card-body">
-        <p class="m-0">{{p.content}}</p>
-    </div>
-        <!-- Post Image -->
-        <div class="card-body">
-       <img 
-            class="card-img-top" 
-            src="{% static 'feed_img.png' %}" 
-            alt="Card image cap" 
-            style="object-fit: cover;"> 
-        </div>
-        <!-- Buttons -->
-        <div class="card-body">
-        <div class="d-flex justify-content-center">
-                <button class="btn btn-sm btn-outline-primary mx-2">
-                    <i class="fas fa-thumbs-up"></i> Like
-                </button>
-                <button class="btn btn-sm btn-outline-secondary mx-2">
-                    <i class="fas fa-comment"></i> Comment
-                </button>
-                <button class="btn btn-sm btn-outline-success mx-2">
-                    <i class="fas fa-share"></i> Share
-                </button>
-        </div>
-    </div>
-
-       
-    </div>
-    {% endfor %}
-  
-</div>
+            <!-- Feed Section -->
+            <div class="col-lg-6">
+                {% for p in posts reversed %}
+                <div class="card" style="height: auto">
+                    <!-- User Info and Post Text -->
+                  
+                    <div class="card-header d-flex align-items-center" style="width:100%">
+                        <img src="{{ p.userid.profileimg.url }}" width="20px" height="20px" />
+            
+                        <p class="m-0"><strong>{{p.userid.username}}</strong></p>
+                    </div>
+                    <div class="card-body">
+                    <p class="m-0">{{p.content}}</p>
+                </div>
+                    <!-- Post Image -->
+                    <div class="card-body">
+                        {% if p.image %}
+                   <img 
+                        class="card-img-top" 
+                        src="{{ p.image.url }}" 
+                        alt="Card image cap" 
+                        style="object-fit: cover;"> 
+                        {% else %}
+                        <img 
+                        class="card-img-top" 
+                        src="{% static 'feed_img.png' %}" 
+                        alt="Default Image" 
+                        style="object-fit: cover;">
+                         {% endif %}
+                    </div>
+                    <!-- Buttons -->
+                    <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                            
+                              <a href="/like-post?postid={{p.postid}}" class="btn btn-sm btn-outline-primary mx-2" >  <i class="fas fa-thumbs-up"></i> Like</a>
+                            
+                            <button class="btn btn-sm btn-outline-secondary mx-2">
+                                <i class="fas fa-comment"></i> Comment
+                            </button>
+                            <button class="btn btn-sm btn-outline-success mx-2">
+                                <i class="fas fa-share"></i> Share
+                            </button>
+                    </div>
+                    <br>
+                    <div>
+                        {% if p.likedposts_set.count == 0 %}
+                        <p>No likes yet</p>
+                    {% elif p.likedposts_set.count == 1 %}
+                        <p>Liked by 1 person</p>
+                    {% elif p.likedposts_set.count > 1 %}
+                        <p>Liked by {{ p.likedposts_set.count }} people</p>
+                    {% endif %}
+                    </div>
+                </div>
+            
+                   
+                </div>
+                {% endfor %}
+              
+        </div> <!-- Closing .row -->
+    </div> 
 
             <!-- Right Sidebar -->
     <div class="col-lg-3">
