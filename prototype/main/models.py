@@ -1,5 +1,6 @@
 from django.db import models
 from taggit.managers import TaggableManager
+from datetime import datetime
 
 class Comments(models.Model):
     commentid = models.AutoField(db_column='COMMENTID', primary_key=True)  # Field name made lowercase.
@@ -81,9 +82,10 @@ class Messages(models.Model):
 class Posts(models.Model):
     postid = models.AutoField(db_column='POSTID', primary_key=True)  # Field name made lowercase.
     userid = models.ForeignKey('Users', models.DO_NOTHING, db_column='USERID')  # Field name made lowercase.
+    image=models.ImageField(db_column='POSTIMG', max_length=300, upload_to='posts/', blank=True, null=True)
     title = models.CharField(db_column='TITLE', max_length=45, blank=True, null=True)  # Field name made lowercase.
     content = models.CharField(db_column='CONTENT', max_length=300, blank=True, null=True)  # Field name made lowercase.
-    created_at = models.DateTimeField(db_column='CREATED_AT', blank=True, null=True)  # Field name made lowercase.
+    created_at = models.DateTimeField(db_column='CREATED_AT', blank=True, null=True, default=datetime.now)  # Field name made lowercase.
     updated_at = models.DateTimeField(db_column='UPDATED_AT', blank=True, null=True)  # Field name made lowercase.
     status = models.CharField(db_column='STATUS', max_length=45, blank=True, null=True)  # Field name made lowercase.
 

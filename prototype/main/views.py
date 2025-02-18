@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms
+from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms, Likedposts
 import json
 from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
@@ -17,10 +17,9 @@ def index(request):
     user_profile=None
     if request.user.is_authenticated:
         user_profile = Users.objects.get(username=request.user.username)
-    post_list = Posts.objects.all()
-    paginator = Paginator(post_list, 10)
-    page = request.GET.get('page')
-    posts = paginator.get_page(page)
+    posts = Posts.objects.all()
+    
+   
     if user_profile:
         return render(request, 'dashboard.html', {'posts':posts, 'user_profile': user_profile})
     else:
@@ -170,3 +169,33 @@ def settings(request):
         user_profile.save()
         return redirect('main:index')
     return render(request, "settings.html", {"user_profile": user_profile})
+
+@login_required(login_url='main:signin')
+def upload(request):
+    if request.method=="POST":
+        user_profile = Users.objects.get(userid=request.user.id)
+        image=request.FILES.get("uploadedImage")
+        content=request.POST["content"]
+
+        new_post=Posts.objects.create(userid=user_profile, image=image, content=content)
+        new_post.save()
+        return redirect('main:index')
+        
+    
+    return render(request, "upload.html")
+
+@login_required(login_url='main:signin')
+def like_post(request):
+    user_profile = Users.objects.get(userid=request.user.id)
+    postid=request.GET.get("postid")
+
+    post=Posts.objects.get(postid=postid)
+    
+    like_filter=Likedposts.objects.filter(postid=post, userid=user_profile ).first()
+    if like_filter==None:
+        new_like=Likedposts.objects.create(postid=post,userid=user_profile)
+        new_like.save()
+       
+    else:
+        like_filter.delete()
+    return redirect('main:index')
