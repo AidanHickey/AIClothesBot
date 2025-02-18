@@ -16,6 +16,8 @@ urlpatterns = [
     path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite'),
     path("upload", views.upload, name='upload'),
     path("like-post", views.like_post, name="like-post"), 
+    path("get_inbox/<int:userid>", views.get_inbox, name='get_inbox'),
+    path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

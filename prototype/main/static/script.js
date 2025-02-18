@@ -75,7 +75,8 @@ function printProductRating(id)
   function onFavorite(id, userid) {
     $.ajax({
       url: `change_favorite/${id}/${userid}`, // if you don't have dynamic url
-      type: 'GET'
+      type: 'GET',
+      
     })
     .done(response => {
       const data = response;
@@ -90,17 +91,36 @@ function printProductRating(id)
     })
   }  
 
+  function inboxDropdown()
+  {
+    window.location.href = "{% url'prototype:signin' %}"
+  }
 
-/*function onFavorite(id, user)
-{   
-    var wrapper = document.getElementById(`favoriteBtn${id}`);
-    if (user=="AnonymousUser")
-    window.location.href='../signin';
-    else {
-    document.location.href =`${id}`;
-    updateStage(user.userid);
+  function inboxDropdown(userid) {
+    $.ajax({
+      type: "GET",
+      url: `get_inbox/${userid}`,
+    })
+      .done(response => {
+        var inbox = document.getElementById("inboxDropdown");
+        inbox.innerHTML = "";
+        const data = response;
+        console.log(data)
+        for(var room in data) {
+        var toUser;
+        if (data[room].userOneID==userid)
+            toUser = data[room].userTwoName;
+        else if (data[room].userTwoID==userid)
+            toUser = data[room].userOneName;
+          inbox.innerHTML += `<a href=messages/${toUser}> <b>${toUser}:</b> ${data[room].lastMessageSent} </a>`;
+         }
+        inbox.classList.toggle("show");
+      })
+    
     }
-};*/
+
+  
+
 
 
 

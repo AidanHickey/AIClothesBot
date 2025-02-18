@@ -8,6 +8,8 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script type="text/javascript" src="{% static 'script.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
 
 </head>
 <body>
@@ -27,9 +29,26 @@
                 <a href="#" class="nav-link text-white mr-3">
                     <i class="fas fa-bell"></i> Notification
                 </a>
-                <a href="#" class="nav-link text-white mr-3">
-                    <i class="fas fa-envelope"></i> Inbox
+                <div class="dropdown">
+                    {% if user.is_authenticated %}
+                    <div class="dropbtn" onclick="inboxDropdown(`{{user.id}}`);"> 
+                        <a  class="nav-link text-white mr-3">
+                            <i class="fas fa-envelope"></i>Inbox
+                        </a>
+                        </div>
+                        <div id="inboxDropdown" class="dropdown-content">
+                               <p> No active message </p>
+                        </div>
+                        </div>
+                {% else %}
+                <div class="dropbtn" onclick="inboxDropdown();"> 
+                <a  class="nav-link text-white mr-3">
+                    <i class="fas fa-envelope"></i>Inbox
                 </a>
+                </div>
+                {% endif %} 
+
+                </div>
                 <div class="input-group mr-3">
                     <input type="text" class="form-control" placeholder="Search">
                     <div class="input-group-append">
@@ -175,7 +194,6 @@
 
     <!-- Bootstrap JS -->
     
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
