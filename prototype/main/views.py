@@ -70,27 +70,56 @@ def change_favorite(request,userid, productid):
 
 
 def marketplace(request):
- 
-    
-
     search_query = request.GET.get('search', '')
-    if search_query:
-        product_list = Products.objects.filter(productname__icontains=search_query)
-    else:
-        product_list = Products.objects.all()
-
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    clothing_type = request.GET.get('type', '')
+    size = request.GET.get('size', '')
+    color = request.GET.get('color', '')
     tag = request.GET.get('tag', '')
+
+    product_list = Products.objects.all()
+
+    if search_query:
+        product_list = product_list.filter(productname__icontains=search_query)
+
+    if min_price and max_price:
+        product_list = product_list.filter(price__gte=min_price, price__lte=max_price)
+    elif min_price:
+        product_list = product_list.filter(price__gte=min_price)
+    elif max_price:
+        product_list = product_list.filter(price__lte=max_price)
+
+    if clothing_type:
+        product_list = product_list.filter(type__icontains=clothing_type)
+
+    if size:
+        product_list = product_list.filter(size__icontains=size)
+
+    if color:
+        product_list = product_list.filter(color__icontains=color)
+
     if tag:
         product_list = product_list.filter(tags__name__in=[tag])
 
-    all_tags = Tag.objects.all()  
-    
+    all_tags = Tag.objects.all()
 
+    # Paginate results
     paginator = Paginator(product_list, 10)
     page = request.GET.get('page')
     products = paginator.get_page(page)
-    
-    return render(request, 'marketplace.html', {'products':products})
+
+    return render(request, 'marketplace.html', {
+        'products': products,
+        'all_tags': all_tags,
+        'search_query': search_query,
+        'min_price': min_price,
+        'max_price': max_price,
+        'clothing_type': clothing_type,
+        'size': size,
+        'color': color,
+    })
+
 
 
 def signup(request):
