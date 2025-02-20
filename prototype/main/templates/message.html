@@ -8,9 +8,10 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'messagebox.css' %}">
     <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'script.js' %}"></script>
-
+  
 
 </head>
 <body>
@@ -19,7 +20,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-primary">
         <div class="container">
             <!-- f Section -->
-            <a class="navbar-brand d-flex align-items-center" href="#">
+            <a class="navbar-brand d-flex align-items-center" href="../">
                 <img src="{% static 'wardrobewise_logo.png' %}" class="logo" alt="Wardrobe Wise Logo">
             </a>
             <!-- Navbar Right Side -->
@@ -82,7 +83,7 @@
             <div class="col-lg-3">
                 <h5>Quick Links</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><i class="fas fa-newspaper"></i> Latest News</li>
+                    <li class="list-group-item" ><i class="fas fa-newspaper"></i> Latest News</li>
                     <li class="list-group-item"><i class="fas fa-user-friends"></i> Friends</li>
                     <li class="list-group-item">
                         <button onclick="location.href='marketplace'" class="btn btn-link p-0 text-primary">
@@ -98,68 +99,34 @@
                 </ul>
             </div>
     
-            <!-- Feed Section -->
-            <div class="col-lg-6">
-                {% for p in posts reversed %}
-                <div class="card" style="height: auto">
-                    <!-- User Info and Post Text -->
-                  
-                    <div class="card-header d-flex align-items-center" style="width:100%">
-                        <img src="{{ p.userid.profileimg.url }}" width="20px" height="20px" />
-            
-                        <p class="m-0"><strong>{{p.userid.username}}</strong></p>
-                    </div>
-                    <div class="card-body">
-                    <p class="m-0">{{p.content}}</p>
-                </div>
-                    <!-- Post Image -->
-                    <div class="card-body">
-                        {% if p.image %}
-                   <img 
-                        class="card-img-top" 
-                        src="{{ p.image.url }}" 
-                        alt="Card image cap" 
-                        style="object-fit: cover;"> 
-                        {% else %}
-                        <img 
-                        class="card-img-top" 
-                        src="{% static 'feed_img.png' %}" 
-                        alt="Default Image" 
-                        style="object-fit: cover;">
-                         {% endif %}
-                    </div>
-                    <!-- Buttons -->
-                    <div class="card-body">
-                    <div class="d-flex justify-content-center">
-                            
-                              <a href="/like-post?postid={{p.postid}}" class="btn btn-sm btn-outline-primary mx-2" >  <i class="fas fa-thumbs-up"></i> Like</a>
-                            
-                            <button class="btn btn-sm btn-outline-secondary mx-2">
-                                <i class="fas fa-comment"></i> Comment
-                            </button>
-                            <button class="btn btn-sm btn-outline-success mx-2">
-                                <i class="fas fa-share"></i> Share
-                            </button>
-                    </div>
-                    <br>
-                    <div>
-                        {% if p.likedposts_set.count == 0 %}
-                        <p>No likes yet</p>
-                    {% elif p.likedposts_set.count == 1 %}
-                        <p>Liked by 1 person</p>
-                    {% elif p.likedposts_set.count > 1 %}
-                        <p>Liked by {{ p.likedposts_set.count }} people</p>
-                    {% endif %}
-                    </div>
-                </div>
-            
-                   
-                </div>
+            <!-- Message Section -->
+            <div class="col-lg-1">
+                <h5>People</h5>
+                <ul class="list-group list-group-flush">
+                {% for room in rooms %}
+                {% if user.id == room.userone.userid %}
+                <li class="list-group-item" onclick="getMessage(`{{room.usertwo.userid}}`)" id = "{{room.usertwo.userid}}">{{room.usertwo.firstname}} {{room.usertwo.lastname}}</li>
+                {% elif user.id == room.usertwo.userid %}
+                <li class="list-group-item" onclick="getMessage(`{{room.userone.userid}}`);" id = "{{room.userone.userid}}">{{room.userone.firstname}} {{room.userone.lastname}}</li>
+                {% else %}
+                <li class="list-group-item">{{room.chatroomid}} + {{user.id}} + {{room.userone}} + {{room.usertwo}}</li>
+                {% endif %}
                 {% endfor %}
-              
-        </div> <!-- Closing .row -->
-    </div> 
-
+                </ul>
+            </div>
+            <div class="col-lg-5">
+                <h5 id="messageHeader">Messages</h5>
+                <div class="chat-container">
+                <div id="chat-container" style="height: 400px";></div>
+                </div>
+                <form method="POST" id="message-form">
+                    {% csrf_token %}
+                    <input type="text" style="display:none; width:84%"  name ="message" id="message">
+                    <input type="hidden" name ="touser" id="touser">
+                    <input type="hidden" name ="chatroomid" id="chatroomid">
+                    <button type="submit" id="Send" style="display:none;width:15%">Send</button>
+                </form>
+            </div>
             <!-- Right Sidebar -->
     <div class="col-lg-3">
         <h5>Events</h5>
@@ -169,27 +136,10 @@
                         <a href="#">See All</a>
                     </li>
                 </ul>
-            </div>
+    </div>
 
 
-        </div>
-        <div class="pagination"> 
-            <span class="step-links">
-                {% if posts.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ posts.previous_page_number }}">previous</a>
-                {% endif %}
-        
-                <span class="current">
-                    Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
-                </span>
-        
-                {% if products.has_next %}
-                    <a href="?page={{ posts.next_page_number }}">next</a>
-                    <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
-                {% endif %}
-            </span>
-        </div> 
+    </div>
     </div>
 
 

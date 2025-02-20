@@ -11,6 +11,8 @@ import datetime
 from django.contrib import messages
 from taggit.models import Tag  
 from django.db.models import Q
+import datetime
+import time
 
 
 def index(request):
@@ -67,6 +69,43 @@ def change_favorite(request,userid, productid):
          FavoritedProducts.objects.create(productid=product,userid=user,date=datetime.datetime.now())
 
     return JsonResponse(productid, content_type='application/json', safe=False)
+
+def message(request):
+    if request.user.is_authenticated:
+        user_profile = Users.objects.get(username=request.user.username)
+        rooms = ChatRooms.objects.filter(Q(userone=request.user.id) | Q(usertwo=request.user.id))
+
+    if user_profile:
+        return render(request, 'message.html', {'user_profile': user_profile, 'rooms' : rooms}) 
+    return render(request, 'signin.html')
+
+def get_message(request,userid):
+    start_time = time.time()
+    message = Messages.objects.filter( (Q(fromuser=userid) & Q(touser=request.user.id)) | (Q(fromuser=request.user.id) & Q(touser=userid)) ).order_by('created_at')
+    data = []
+    for m in message:
+        if (request.user.id==m.fromuser_id):
+            tag = "send"
+        else:
+            tag = "receive"
+        item = {'id':m.messageid, 'fromuser':m.fromuser_id, 'touser':m.touser_id,'content':m.content,'tag':tag, 'created_at':m.created_at,'chatroomid':m.chatroomid_id }
+        data.append(item)
+    print("Getting time: --- %s seconds ---" % (time.time() - start_time))
+    return JsonResponse(data, content_type='application/json', safe=False)
+
+def send_message(request):
+    if request.method == "POST":
+        start_time = time.time()
+        fromUser = Users.objects.get(userid=request.user.id)
+        toUser = Users.objects.get(userid=request.POST['touser'])
+        chatroom = ChatRooms.objects.get(chatroomid=request.POST['chatroomid'])
+        message = Messages.objects.create(fromuser=fromUser,touser=toUser,content=request.POST['message'],created_at=datetime.datetime.now(),chatroomid=chatroom)
+        message.save()
+        print("Saving time: --- %s seconds ---" % (time.time() - start_time))
+        return HttpResponse(str(toUser.userid))
+    
+    return HttpResponse()
+   
 
 
 def marketplace(request):

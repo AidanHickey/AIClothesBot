@@ -108,16 +108,86 @@ function printProductRating(id)
         console.log(data)
         for(var room in data) {
         var toUser;
-        if (data[room].userOneID==userid)
+        var toUserId;
+        if (data[room].userOneID==userid){
             toUser = data[room].userTwoName;
+            toUserId = data[room].userTwoID;
+        }
         else if (data[room].userTwoID==userid)
+        {
             toUser = data[room].userOneName;
-          inbox.innerHTML += `<a href=messages/${toUser}> <b>${toUser}:</b> ${data[room].lastMessageSent} </a>`;
-         }
+            toUserId = data[room].userOneID;
+        }
+          inbox.innerHTML += `<a href="../message#${toUserId}" <b>${toUser}:</b> ${data[room].lastMessageSent} </a>`;
+        }
         inbox.classList.toggle("show");
       })
     
     }
+
+  
+    function getMessage(userid) {
+      $.ajax({
+        type: "GET",
+        url: `get_message/${userid}`,
+      })
+        .done(response => {
+          var messages = document.getElementById("chat-container");
+          messages.innerHTML = "";
+          const data = response;
+          console.log(data)
+          for(var message in data) {
+          console.log(data[message].tag)
+          if (data[message].tag=="send")
+          {
+            messages.innerHTML += `<div class="me">${data[message].content}</div>`
+          }
+          else if (data[message].tag=="receive")
+          {
+            messages.innerHTML += `<div class="you">${data[message].content}</div>`
+          }
+
+        }
+        var currentChatRoom = document.getElementById("chatroomid");
+        var currentReceiver = document.getElementById("touser");
+        currentChatRoom.value = data[0].chatroomid;
+        currentReceiver.value = userid;
+        var header = document.getElementById("messageHeader");
+        var roomName = document.getElementById(`${userid}`)
+        header.innerHTML = `<h5> Messages with ${roomName.innerText}`
+        var textbox = document.getElementById("message")
+        textbox.style.display = 'inline'; 
+        textbox.value = ""
+        document.getElementById("Send").style.display = 'inline';
+        messages.scrollTop = messages.scrollHeight;
+      }
+      )
+      
+      }
+
+$(document).ready(function () {
+    $('#message-form').submit(function(e){
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        type:"POST",
+        url: `send_message`,
+        data: formData, 
+        success: function(response){
+        getMessage(response)
+        },
+        error: function (response) {
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    })
+  })}
+  
+
+   
+  
+
 
   
 
@@ -125,4 +195,4 @@ function printProductRating(id)
 
 
 
-
+    )
