@@ -115,7 +115,7 @@ class Users(models.Model):
     firstname = models.CharField(db_column='FIRSTNAME', max_length=45, blank=True, null=True)
     lastname = models.CharField(db_column='LASTNAME', max_length=45, blank=True, null=True)  # Field name made lowercase.
     email = models.CharField(db_column='EMAIL', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    profileimg = models.ImageField(db_column='PROFILEIMG', max_length=300, upload_to="userimg/", blank=True, null=True, default='media/userimg/blank-profile-picture.png')
+    profileimg = models.ImageField(db_column='PROFILEIMG', max_length=300, upload_to="userimg/", blank=True, null=True, default='userimg/blank-profile-picture.png')
     status = models.CharField(db_column='STATUS', max_length=45,  blank=True, null=True)  # Field name made lowercase.
     biography = models.CharField(db_column='BIOGRAPHY', max_length=500, blank=True, null=True)
 

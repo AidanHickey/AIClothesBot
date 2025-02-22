@@ -59,11 +59,12 @@
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {% if user_profile and user_profile.profileimg %}
-                                <img src="{{ user_profile.profileimg.url }}" class="rounded-circle nav-user-icon" alt="User Profile Icon" width="40px" height="40px">
-                            {% else %}
-                                <img src="/media/userimg/guestprofilepic.png" class="rounded-circle nav-user-icon" alt="Default Profile Icon" width="40px" height="40px">
-                            {% endif %}
-                        </a>
+                            <img src="{{ user_profile.profileimg.url }}" class="rounded-circle nav-user-icon" alt="User Profile Icon" width="40px" height="40px">
+                        {% else %}
+                            <img src="media/userimg/guestprofilepic.png" class="rounded-circle nav-user-icon" alt="Guest Profile Icon" width="40px" height="40px">
+                        {% endif %}
+                                                           
+                    </a>
                         
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li><a class="dropdown-item" href="{% url 'main:settings' %}">Settings</a></li>
