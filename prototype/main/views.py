@@ -11,6 +11,8 @@ import datetime
 from django.contrib import messages
 from taggit.models import Tag  
 from django.db.models import Q
+import datetime
+import time
 
 
 def index(request):
@@ -68,29 +70,95 @@ def change_favorite(request,userid, productid):
 
     return JsonResponse(productid, content_type='application/json', safe=False)
 
+def message(request):
+    if request.user.is_authenticated:
+        user_profile = Users.objects.get(username=request.user.username)
+        rooms = ChatRooms.objects.filter(Q(userone=request.user.id) | Q(usertwo=request.user.id))
+
+    if user_profile:
+        return render(request, 'message.html', {'user_profile': user_profile, 'rooms' : rooms}) 
+    return render(request, 'signin.html')
+
+def get_message(request,userid):
+    start_time = time.time()
+    message = Messages.objects.filter( (Q(fromuser=userid) & Q(touser=request.user.id)) | (Q(fromuser=request.user.id) & Q(touser=userid)) ).order_by('created_at')
+    data = []
+    for m in message:
+        if (request.user.id==m.fromuser_id):
+            tag = "send"
+        else:
+            tag = "receive"
+        item = {'id':m.messageid, 'fromuser':m.fromuser_id, 'touser':m.touser_id,'content':m.content,'tag':tag, 'created_at':m.created_at,'chatroomid':m.chatroomid_id }
+        data.append(item)
+    print("Getting time: --- %s seconds ---" % (time.time() - start_time))
+    return JsonResponse(data, content_type='application/json', safe=False)
+
+def send_message(request):
+    if request.method == "POST":
+        start_time = time.time()
+        fromUser = Users.objects.get(userid=request.user.id)
+        toUser = Users.objects.get(userid=request.POST['touser'])
+        chatroom = ChatRooms.objects.get(chatroomid=request.POST['chatroomid'])
+        message = Messages.objects.create(fromuser=fromUser,touser=toUser,content=request.POST['message'],created_at=datetime.datetime.now(),chatroomid=chatroom)
+        message.save()
+        print("Saving time: --- %s seconds ---" % (time.time() - start_time))
+        return HttpResponse(str(toUser.userid))
+    
+    return HttpResponse()
+   
+
 
 def marketplace(request):
- 
-    
-
     search_query = request.GET.get('search', '')
-    if search_query:
-        product_list = Products.objects.filter(productname__icontains=search_query)
-    else:
-        product_list = Products.objects.all()
-
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    clothing_type = request.GET.get('type', '')
+    size = request.GET.get('size', '')
+    color = request.GET.get('color', '')
     tag = request.GET.get('tag', '')
+
+    product_list = Products.objects.all()
+
+    if search_query:
+        product_list = product_list.filter(productname__icontains=search_query)
+
+    if min_price and max_price:
+        product_list = product_list.filter(price__gte=min_price, price__lte=max_price)
+    elif min_price:
+        product_list = product_list.filter(price__gte=min_price)
+    elif max_price:
+        product_list = product_list.filter(price__lte=max_price)
+
+    if clothing_type:
+        product_list = product_list.filter(type__icontains=clothing_type)
+
+    if size:
+        product_list = product_list.filter(size__icontains=size)
+
+    if color:
+        product_list = product_list.filter(color__icontains=color)
+
     if tag:
         product_list = product_list.filter(tags__name__in=[tag])
 
-    all_tags = Tag.objects.all()  
-    
+    all_tags = Tag.objects.all()
 
+    # Paginate results
     paginator = Paginator(product_list, 10)
     page = request.GET.get('page')
     products = paginator.get_page(page)
-    
-    return render(request, 'marketplace.html', {'products':products})
+
+    return render(request, 'marketplace.html', {
+        'products': products,
+        'all_tags': all_tags,
+        'search_query': search_query,
+        'min_price': min_price,
+        'max_price': max_price,
+        'clothing_type': clothing_type,
+        'size': size,
+        'color': color,
+    })
+
 
 
 def signup(request):

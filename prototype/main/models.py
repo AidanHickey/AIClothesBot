@@ -95,16 +95,22 @@ class Posts(models.Model):
 
 
 class Products(models.Model):
-    productid = models.AutoField(db_column='PRODUCTID', primary_key=True)  # Field name made lowercase.
-    productname = models.CharField(db_column='PRODUCTNAME', max_length=300, blank=True, null=True)  # Field name made lowercase.
-    price = models.DecimalField(db_column='PRICE', max_digits=6, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
-    category = models.CharField(db_column='CATEGORY', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    image = models.ImageField(db_column='IMAGE', max_length=300, blank=True, null=True)  # Field name made lowercase.
+    productid = models.AutoField(db_column='PRODUCTID', primary_key=True)
+    productname = models.CharField(db_column='PRODUCTNAME', max_length=300, blank=True, null=True)
+    price = models.DecimalField(db_column='PRICE', max_digits=6, decimal_places=2, blank=True, null=True)
+    category = models.CharField(db_column='CATEGORY', max_length=45, blank=True, null=True)
+    image = models.ImageField(db_column='IMAGE', max_length=300, blank=True, null=True)
     rating = models.DecimalField(db_column='RATING', max_digits=2, decimal_places=1, blank=True, null=True)
-    tags = TaggableManager()  
+    tags = TaggableManager()
+    type = models.CharField(max_length=255, blank=True)  
+    size = models.CharField(max_length=50, blank=True) 
+    color = models.CharField(max_length=50, blank=True)  
+    
+    def __str__(self):
+        return self.productname  
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Products'
 
 

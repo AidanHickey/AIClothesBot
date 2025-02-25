@@ -15,9 +15,10 @@ class ProductForm(forms.ModelForm):
 # Register the Product model with the custom form
 class ProductAdmin(admin.ModelAdmin):
     form = ProductForm
-    list_display = ('productname', 'price', 'category', 'rating')
+    list_display = ('productname', 'price', 'category', 'rating', 'type', 'size', 'color') 
     search_fields = ('productname', 'category')
-    list_filter = ('category',)
+    list_filter = ('category', 'type', 'size', 'color')  
+    fields = ('productname', 'price', 'category', 'rating', 'tags', 'type', 'size', 'color')  
 
 # Register the model and admin class
 admin.site.register(Products, ProductAdmin)

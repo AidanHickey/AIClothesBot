@@ -17,9 +17,12 @@ urlpatterns = [
     path("upload", views.upload, name='upload'),
     path("like-post", views.like_post, name="like-post"), 
     path("get_inbox/<int:userid>", views.get_inbox, name='get_inbox'),
-    path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite'),
     path("profile/<int:userid>", views.profile, name='profile'),
     path("follow", views.follow, name='follow'),
+    path("message", views.message, name='message'),
+    path("get_message/<int:userid>", views.get_message, name='get_message'),
+    path("send_message", views.send_message, name='send_message'),
+    path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
