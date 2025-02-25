@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms, Likedposts
+from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms, Likedposts, Followers
 import json
 from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
@@ -267,3 +267,59 @@ def like_post(request):
     else:
         like_filter.delete()
     return redirect('main:index')
+
+def profile(request, userid):
+    try:
+        user_profile = Users.objects.get(userid=userid)
+    except Users.DoesNotExist:  
+        return redirect("/")  
+
+    
+    current_user = None
+    if request.user.is_authenticated:  
+        try:
+            current_user = Users.objects.get(userid=request.user.id)
+        except Users.DoesNotExist:
+            current_user = None 
+    user_posts = Posts.objects.filter(userid=userid)
+    user_posts_length=len(user_posts)
+    
+    user_followers=len(Followers.objects.filter(touser=user_profile))
+    user_following=len(Followers.objects.filter(fromuser=user_profile))
+    if Followers.objects.filter(fromuser=current_user, touser=user_profile).first():
+        button_text="Unfollow"
+    else:
+        button_text="Follow"
+    info={
+        "user_profile": user_profile,
+        "user_posts":user_posts,
+        "user_posts_length":user_posts_length, 
+        "current_user":current_user,
+        "button_text":button_text,
+        "user_followers":user_followers,
+        "user_following":user_following,
+    }
+    return render(request, "profile.html", info)
+
+@login_required(login_url='main:signin')
+def follow(request):
+    if request.method=="POST":
+        fromuser_id=request.POST['current_user']
+        touser_id=request.POST['user_profile']
+        try:
+           
+            fromuser = Users.objects.get(userid=fromuser_id)
+            touser = Users.objects.get(userid=touser_id)
+        except User.DoesNotExist:
+            return redirect("/") 
+
+        if Followers.objects.filter(fromuser=fromuser, touser=touser).first():
+            delete_follower=Followers.objects.get(fromuser=fromuser, touser=touser)
+            delete_follower.delete()
+            return redirect('/profile/'+str(touser.userid))
+        else:
+            new_follower=Followers.objects.create(fromuser=fromuser, touser=touser)
+            new_follower.save()
+            return redirect('/profile/'+str(touser.userid))
+    else:
+        return redirect("/") 
