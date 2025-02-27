@@ -1,163 +1,155 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Settings</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/uikit.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/tailwind.css' %}">
-
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'script.js' %}"></script>
 </head>
-
 <body>
-
-
-       
-
-          
-
-            <div class="container m-auto"> 
-
-                <h1 class="text-2xl leading-none text-gray-900 tracking-tight mt-3"><a href="/">Home</a> / Account Setting for <b>{{user.username}}</b> </h1>
-                <!-- <ul class="mt-5 -mr-3 flex-nowrap lg:overflow-hidden overflow-x-scroll uk-tab">
-                    <li class="uk-active"><a href="#">General</a></li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Notification</a></li>
-                    <li><a href="#">Social links</a></li>
-                    <li><a href="#">Billing</a></li>
-                    <li><a href="#">Security</a></li>
-                </ul> -->
-                <br>
-                <hr>
-                <div class="grid lg:grid-cols-3 mt-12 gap-8">
-                    <div>
-                        <h3 class="text-xl mb-2"> General</h3>
-                        <p></p>
-                    </div>
-                    <div class="bg-white rounded-md lg:shadow-lg shadow col-span-2">
-                        
-                    <form action="" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                       <div class="grid grid-cols-2 gap-3 lg:p-6 p-4">
-                           
-                           
-                            <div class="col-span-2">
-                                <label for=""> Profile Image</label>
-                                {% if user_profile.profileimg %}
-    <img width="100" height="100" src="{{ user_profile.profileimg.url }}" />
-{% else %}
-    <img width="100" height="100" src="media/userimg/blank-profile-picture.png" />
-{% endif %}
-                                <input type="file" name="image" value="" class="shadow-none bg-gray-100">
-                            </div>
-                            <div class="col-span-2">
-                                <label for="bio">BIO</label>  
-                                <textarea id="biography" name="biography"  class="shadow-none bg-gray-100">{{user_profile.biography}}</textarea>
-                            </div> 
-                            <div class="col-span-2"
-                                <label for="email">Email</label>  
-                                <textarea id="email" name="email"  class="shadow-none bg-gray-100">{{user_profile.email}}</textarea>
-                            </div> 
-                            
-                            
-                       </div> 
+   
     
-                       <div class="bg-gray-10 p-6 pt-0 flex justify-end space-x-3">
-                           <button class="p-2 px-4 rounded bg-gray-50 text-red-500"> <a href="/">Cancel</a> </button>
-                           <button type="submit" class="button bg-blue-700"> Save </button>
-                       </div>
-                    </form>
-    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="{% static 'wardrobewise_logo.png' %}" class="logo" alt="Wardrobe Wise Logo">
+            </a>
+            <div class="navbar-nav ml-auto d-flex align-items-center">
+                <a href="{% url 'main:upload' %}" class="nav-link text-white mr-3">
+                    <i class="fas fa-upload"></i> Upload Post
+                </a>
+                <a href="#" class="nav-link text-white mr-3">
+                    <i class="fas fa-bell"></i> Notification
+                </a>
+                <div class="dropdown">
+                    {% if user.is_authenticated %}
+                    <div class="dropbtn" onclick="inboxDropdown(`{{user.id}}`);"> 
+                        <a class="nav-link text-white mr-3">
+                            <i class="fas fa-envelope"></i>Inbox
+                        </a>
                     </div>
-
-                    <!-- <div>
-                        <h3 class="text-xl mb-2"> Privacy</h3>
-                        <p> </p>
+                    <div id="inboxDropdown" class="dropdown-content">
+                        <p>No active message</p>
                     </div>
-                    <div class="bg-white rounded-md lg:shadow-lg shadow lg:p-6 p-4 col-span-2">
-
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4> Who can follow me ?</h4>
-                                <div>  </div>
-                            </div>
-                            <div class="switches-list -mt-8 is-large">
-                                <div class="switch-container">
-                                    <label class="switch"><input type="checkbox"><span class="switch-button"></span> </label>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4> Show my activities ?</h4>
-                                <div>  </div>
-                            </div>
-                            <div class="switches-list -mt-8 is-large">
-                                <div class="switch-container">
-                                    <label class="switch"><input type="checkbox" checked><span class="switch-button"></span> </label>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4> Search engines?</h4>
-                                <div>  </div>
-                            </div>
-                            <div class="switches-list -mt-8 is-large">
-                                <div class="switch-container">
-                                    <label class="switch"><input type="checkbox"><span class="switch-button"></span> </label>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4> Allow Commenting?</h4>
-                                <div>  </div>
-                            </div>
-                            <div class="switches-list -mt-8 is-large">
-                                <div class="switch-container">
-                                    <label class="switch"><input type="checkbox"><span class="switch-button"></span> </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-    
+                    {% else %}
+                    <div class="dropbtn" onclick="inboxDropdown();"> 
+                        <a class="nav-link text-white mr-3">
+                            <i class="fas fa-envelope"></i>Inbox
+                        </a>
                     </div>
-                    <br>
-
+                    {% endif %}
                 </div>
-
+                <div class="input-group mr-3">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {% if user_profile and user_profile.profileimg %}
+                            <img src="{{ user_profile.profileimg.url }}" class="rounded-circle nav-user-icon" alt="User Profile Icon" width="40px" height="40px">
+                        {% else %}
+                            <img src="/media/userimg/guestprofilepic.png" class="rounded-circle nav-user-icon" alt="Default Profile Icon" width="40px" height="40px">
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{% url 'main:settings' %}">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+                    </ul>
+                </div>
             </div>
-            
         </div>
+    </nav>
 
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-3">
+                <h5>Quick Links</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-newspaper"></i> Latest News</li>
+                    <li class="list-group-item"><i class="fas fa-user-friends"></i> Friends</li>
+                    <li class="list-group-item">
+                        <button onclick="location.href='marketplace'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-store"></i> Marketplace
+                        </button>
+                    </li>
+                    <li class="list-group-item"><a href="#">See More</a></li>
+                </ul>
+                <h5 class="mt-4">Your Shortcuts</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-code"></i> Outfit Oriented Programmers</li>
+                    <li class="list-group-item"><i class="fas fa-laptop-code"></i> Development</li>
+                </ul>
+            </div>
+
+
+            <!-- Settings Form -->
+            <div class="col-lg-6">
+                <h1 class="text-2xl leading-none text-gray-900 tracking-tight mt-3">Account Settings for <b>{{ user.username }}</b></h1>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                <li class="{{ message.tags }}">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="profileimg">Profile Image</label>
+                                {% if user_profile.profileimg %}
+                                <img width="100" height="100" src="{{ user_profile.profileimg.url }}" />
+                                {% else %}
+                                <img width="100" height="100" src="media/userimg/blank-profile-picture.png" />
+                                {% endif %}
+                                <input type="file" name="image" class="form-control-file">
+                            </div>
+                            <div class="form-group">
+                                <label for="biography">Bio</label>
+                                <textarea id="biography" name="biography" class="form-control">{{ user_profile.biography }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" value="{{ user_profile.email }}" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save <span>&#x27f6;</span></button>
+                            <a href="/" class="btn btn-secondary">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Right Sidebar -->
+            <div class="col-lg-3">
+                <h5>Events</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Event Title</span>
+                        <a href="#">See All</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
-
     
-
- <!-- Scripts
-    ================================================== -->
-    <script src="{% static 'assets/js/tippy.all.min.js' %}"></script>  
-    <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
-    <script src="{% static 'assets/js/uikit.js' %}"></script>
-    <script src="{% static 'assets/js/simplebar.js' %}"></script>
-    <script src="{% static 'assets/js/custom.js' %}"></script>
-
-
-    <script src="{% static '../../unpkg.com/ionicons%405.2.3/dist/ionicons.js' %}"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-
 </html>
