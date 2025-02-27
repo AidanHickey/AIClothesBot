@@ -91,12 +91,62 @@ function printProductRating(id)
     })
   }  
 
-  function inboxDropdown()
-  {
-    window.location.href = "{% url'prototype:signin' %}"
-  }
+  
 
-  function inboxDropdown(userid) {
+
+
+   $(document).ready(function () {
+      $('#create_chat_room').submit(function(e){
+      e.preventDefault();
+      var formData = new FormData(this);
+      $.ajax({
+          type:"POST",
+          url: `../create_chat`,
+          data: formData, 
+          success: function(response){
+         window.location.href = get_message_url;
+            
+          },
+          error: function(response) {
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+        
+      })
+    })
+  })
+
+
+   /* $(document).ready(function () {
+      $('#get-user-form').submit(function(e){
+      e.preventDefault();
+      var formData = new FormData(this);
+      $.ajax({
+          type:"POST",
+          url: `get_user`,
+          data: formData, 
+          success: function(response){
+            var users = document.getElementById("userDropDown");
+            users.innerHTML = "";
+            const data = response;
+            console.log(data);
+            for(var i in data)
+            {
+              users.innerHTML += `<img src="${media_url}${data[i].profileimg}" class="rounded-circle nav-user-icon" alt="User Profile Icon" width="40px" height="40px"> ${data[i].firstname} ${data[i].lastname}`;
+            }
+          },
+          error: function (response) {
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+      })
+    })
+  })
+*/
+
+  /* function inboxDropdown(userid) {
     $.ajax({
       type: "GET",
       url: `get_inbox/${userid}`,
@@ -123,7 +173,7 @@ function printProductRating(id)
         inbox.classList.toggle("show");
       })
     
-    }
+    } */
 
   
     function getMessage(userid) {
@@ -137,7 +187,6 @@ function printProductRating(id)
           const data = response;
           console.log(data)
           for(var message in data) {
-          console.log(data[message].tag)
           if (data[message].tag=="send")
           {
             messages.innerHTML += `<div class="me">${data[message].content}</div>`

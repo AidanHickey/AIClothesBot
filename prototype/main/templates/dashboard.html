@@ -32,18 +32,15 @@
                 </a>
                 <div class="dropdown">
                     {% if user.is_authenticated %}
-                    <div class="dropbtn" onclick="inboxDropdown(`{{user.id}}`);"> 
-                        <a  class="nav-link text-white mr-3">
+                    <div class="dropbtn"> 
+                        <a  href="{% url 'main:message' %}" class="nav-link text-white mr-3">
                             <i class="fas fa-envelope"></i>Inbox
                         </a>
                         </div>
-                        <div id="inboxDropdown" class="dropdown-content">
-                               <p> No active message </p>
-                        </div>
                         </div>
                 {% else %}
-                <div class="dropbtn" onclick="inboxDropdown();"> 
-                <a  class="nav-link text-white mr-3">
+                <div class="dropbtn" > 
+                <a  href="{% url 'main:signin' %}"class="nav-link text-white mr-3">
                     <i class="fas fa-envelope"></i>Inbox
                 </a>
                 </div>
