@@ -324,6 +324,7 @@ def like_post(request):
     return redirect('main:index')
 
 def profile(request, userid):
+    start_time = time.time()
     try:
         user_profile = Users.objects.get(userid=userid)
     except Users.DoesNotExist:  
@@ -337,10 +338,10 @@ def profile(request, userid):
         except Users.DoesNotExist:
             current_user = None 
     user_posts = Posts.objects.filter(userid=userid)
-    user_posts_length=len(user_posts)
+    user_posts_length=user_posts.count()
     
-    user_followers=len(Followers.objects.filter(touser=user_profile))
-    user_following=len(Followers.objects.filter(fromuser=user_profile))
+    user_followers=Followers.objects.filter(touser=user_profile).count()
+    user_following=Followers.objects.filter(fromuser=user_profile).count()
     if Followers.objects.filter(fromuser=current_user, touser=user_profile).first():
         button_text="Unfollow"
     else:
@@ -354,6 +355,7 @@ def profile(request, userid):
         "user_followers":user_followers,
         "user_following":user_following,
     }
+    print("Loading time: --- %s seconds ---" % (time.time() - start_time))
     return render(request, "profile.html", info)
 
 @login_required(login_url='main:signin')
@@ -368,15 +370,16 @@ def follow(request):
         except User.DoesNotExist:
             return redirect("/") 
 
-        if Followers.objects.filter(fromuser=fromuser, touser=touser).first():
-            delete_follower=Followers.objects.get(fromuser=fromuser, touser=touser)
-            delete_follower.delete()
+        check_follower = Followers.objects.filter(fromuser=fromuser, touser=touser).first()
+        if check_follower:
+            check_follower.delete()
             return redirect('/profile/'+str(touser.userid))
         else:
             new_follower=Followers.objects.create(fromuser=fromuser, touser=touser)
             new_follower.save()
             new_notif = Notifications.objects.create(content=new_follower.fromuser.firstname + " " + new_follower.fromuser.lastname + " followed you.", userid = new_follower.touser, link = '/profile/'+ str(new_follower.fromuser.userid))
             new_notif.save()
+
             return redirect('/profile/'+str(touser.userid))
     else:
         return redirect("/") 
