@@ -24,7 +24,8 @@ urlpatterns = [
     path("create_chat",views.create_chat,name='create_chat'),
     path("get_user", views.get_user,name='get_user'),
     path("send_message", views.send_message, name='send_message'),
-    path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite')
+    path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite'),
+    path("read_notif", views.read_notif, name='read_notif')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

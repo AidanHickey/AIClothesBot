@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms, Likedposts, Followers
+from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms, Likedposts, Followers,Notifications
 import json
 from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
@@ -19,11 +19,13 @@ def index(request):
     user_profile=None
     if request.user.is_authenticated:
         user_profile = Users.objects.get(username=request.user.username)
+        notification = Notifications.objects.filter(userid=request.user.id)
+        notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
     posts = Posts.objects.all()
     
    
     if user_profile:
-        return render(request, 'dashboard.html', {'posts':posts, 'user_profile': user_profile})
+        return render(request, 'dashboard.html', {'posts':posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count})
     else:
         return render(request, 'dashboard.html', {'posts':posts})
     
@@ -61,6 +63,15 @@ def create_chat(request):
             room.save()
     return HttpResponse()
 
+def read_notif(request):
+    if request.method == "POST":
+        user_profile = Users.objects.get(userid=request.user.id)
+        if (user_profile):
+            notification = Notifications.objects.filter(userid = request.user.id)
+            notification.update(status='read')
+            notification.save()
+    return HttpResponse()
+
 
 # def get_inbox(request,userid):
 #     room = ChatRooms.objects.filter(Q(userone=userid) | Q(usertwo=userid))
@@ -88,9 +99,11 @@ def message(request):
         user_profile = Users.objects.get(username=request.user.username)
         rooms = ChatRooms.objects.filter(Q(userone=request.user.id) | Q(usertwo=request.user.id))
         users = Users.objects.exclude(userid = user_profile.userid)
+        notification = Notifications.objects.filter(userid=request.user.id)
+        notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
 
     if user_profile:
-        return render(request, 'message.html', {'user_profile': user_profile, 'rooms' : rooms, 'users':users}) 
+        return render(request, 'message.html', {'user_profile': user_profile, 'rooms' : rooms, 'users':users,  'notification':notification,  'notification_count':notification_count}) 
     return render(request, 'signin.html')
 
 def get_message(request,userid):
@@ -169,6 +182,25 @@ def marketplace(request):
     page = request.GET.get('page')
     products = paginator.get_page(page)
 
+    if request.user.is_authenticated:
+        user_profile = Users.objects.get(username=request.user.username)
+        notification = Notifications.objects.filter(userid=request.user.id)
+        notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
+    if user_profile:
+        return render(request, 'marketplace.html', {
+        'products': products,
+        'all_tags': all_tags,
+        'search_query': search_query,
+        'min_price': min_price,
+        'max_price': max_price,
+        'clothing_type': clothing_type,
+        'size': size,
+        'color': color,
+        'user_profile':user_profile,
+        'notification':notification,
+        'notification_count':notification_count
+    })
+
     return render(request, 'marketplace.html', {
         'products': products,
         'all_tags': all_tags,
@@ -178,6 +210,7 @@ def marketplace(request):
         'clothing_type': clothing_type,
         'size': size,
         'color': color,
+        'notification_count':0
     })
 
 
@@ -284,6 +317,8 @@ def like_post(request):
     if like_filter==None:
         new_like=Likedposts.objects.create(postid=post,userid=user_profile)
         new_like.save()
+        new_notif = Notifications.objects.create(content=new_like.userid.firstname + " " + new_like.userid.lastname + " liked your post.", userid = new_like.postid.userid, link = '')
+        new_notif.save()
        
     else:
         like_filter.delete()
@@ -341,6 +376,8 @@ def follow(request):
         else:
             new_follower=Followers.objects.create(fromuser=fromuser, touser=touser)
             new_follower.save()
+            new_notif = Notifications.objects.create(content=new_follower.fromuser.firstname + " " + new_follower.fromuser.lastname + " followed you.", userid = new_follower.touser, link = '/profile/'+ str(new_follower.fromuser.userid))
+            new_notif.save()
             return redirect('/profile/'+str(touser.userid))
     else:
         return redirect("/") 

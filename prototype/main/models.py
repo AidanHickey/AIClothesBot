@@ -113,6 +113,17 @@ class Products(models.Model):
         managed = True
         db_table = 'Products'
 
+class Notifications(models.Model):
+    notifid = models.AutoField(db_column='NOTIFID', primary_key=True)  # Field name made lowercase.
+    content = models.CharField(db_column='CONTENT', max_length=500, db_collation='utf8mb3_general_ci', blank=True, null=True)  # Field name made lowercase.
+    link = models.CharField(db_column='LINK', max_length=500, db_collation='utf8mb3_general_ci', blank=True, null=True)  # Field name made lowercase.
+    userid = models.ForeignKey('Users', models.DO_NOTHING, db_column='USERID')  # Field name made lowercase.
+    status = models.CharField(max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Notifications'
+
 
 class Users(models.Model):
     userid = models.AutoField(db_column='USERID', primary_key=True)  # Field name made lowercase.

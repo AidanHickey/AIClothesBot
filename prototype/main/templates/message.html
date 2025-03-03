@@ -29,29 +29,44 @@
             </a>
             <!-- Navbar Right Side -->
             <div class="navbar-nav ml-auto d-flex align-items-center">
-                <a href={% url 'main:upload' %} class="nav-link text-white mr-3">
-                    <i class="fas fa-upload"></i> Upload Post
-                </a>
-                <a href="#" class="nav-link text-white mr-3">
-                    <i class="fas fa-bell"></i> Notification
-                </a>
-                <div class="dropdown">
+                <div class ="dropbtn">
+                    <a href="{% url 'main:upload' %}" class="nav-link text-white mr-3">
+                        <i class="fas fa-upload"></i> Upload Post
+                    </a>
+                    </div>
                     {% if user.is_authenticated %}
-                    <div class="dropbtn"> 
-                        <a  href="{% url 'main:message' %}" class="nav-link text-white mr-3">
-                            <i class="fas fa-envelope"></i>Inbox
+                    <div class="dropdown" id="notification">
+                    <div class ="dropbtn">
+                    <a class="nav-link text-white mr-3">
+                        <i class="fas fa-bell"><div class="notification" id="notifCount">{{notification_count}}</div> </i> Notification 
+                    </a>
+                    </div>
+                    <div class ="dropdown-content">
+                        {% for notif in notification %}
+                        <a href="{{notif.link}}">{{notif.content}}</a>    
+                        {% endfor %}
+                    </div>
+                    </div>
+                    
+                    {% else %}
+                    <div class ="dropbtn">
+                        <a  href="{% url 'main:signin' %}" class="nav-link text-white mr-3">
+                            <i class="fas fa-bell"></i>Notification
                         </a>
-                        </div>
-                        </div>
-                {% else %}
-                <div class="dropbtn" > 
-                <a  href="{% url 'main:signin' %}"class="nav-link text-white mr-3">
-                    <i class="fas fa-envelope"></i>Inbox
-                </a>
-                </div>
-                {% endif %} 
-
-                </div>
+                    </div>
+                    {% endif %} 
+                    <div class ="dropbtn">         
+                        {% if user.is_authenticated %}
+                            <a  href="{% url 'main:message' %}" class="nav-link text-white mr-3">
+                                <i class="fas fa-envelope"></i>Inbox
+                            </a>
+                    {% else %}
+                    <a  href="{% url 'main:signin' %}"class="nav-link text-white mr-3">
+                        <i class="fas fa-envelope"></i>Inbox
+                    </a>
+                    {% endif %} 
+                    </div>
+                    </div>
                 <div class="input-group mr-3">
                     <input type="text" class="form-control" placeholder="Search">
                     <div class="input-group-append">

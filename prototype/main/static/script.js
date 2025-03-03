@@ -91,9 +91,11 @@ function printProductRating(id)
     })
   }  
 
+
   
 
-
+ 
+ 
 
    $(document).ready(function () {
       $('#create_chat_room').submit(function(e){
@@ -209,7 +211,9 @@ function printProductRating(id)
         textbox.value = ""
         document.getElementById("Send").style.display = 'inline';
         messages.scrollTop = messages.scrollHeight;
+        setTimeout(getMessage(userid), 3000);
       }
+    
       )
       
       }
@@ -232,16 +236,5 @@ $(document).ready(function () {
         processData: false
     })
   })}
-  
+  )
 
-   
-  
-
-
-  
-
-
-
-
-
-    )
