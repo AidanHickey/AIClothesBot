@@ -238,3 +238,16 @@ $(document).ready(function () {
   })}
   )
 
+  $(document).ready(function () {
+$( "#notification.dropdown" ).on( "mouseover", function() {
+  console.log('ok')
+  $.ajax({
+    type:"POST",
+    url: `read_notif`, 
+    data : {csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value},
+    success: function(response){
+      var notif = document.getElementById("notifCount");
+      notif.innerHTML = '0';
+    },
+    })
+  })})

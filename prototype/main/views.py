@@ -69,7 +69,6 @@ def read_notif(request):
         if (user_profile):
             notification = Notifications.objects.filter(userid = request.user.id)
             notification.update(status='read')
-            notification.save()
     return HttpResponse()
 
 
