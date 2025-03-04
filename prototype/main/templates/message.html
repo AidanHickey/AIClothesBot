@@ -121,9 +121,9 @@
                 <ul class="list-group list-group-flush" style="height: 400px ; overflow-x: auto">
                 {% for room in rooms %}
                 {% if user.id == room.userone.userid %}
-                <li class="list-group-item" onclick="getMessage(`{{room.usertwo.userid}}`)" id = "{{room.usertwo.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"> <img src="{% get_media_prefix %}{{room.usertwo.profileimg}}" class="rounded-circle nav-user-icon" >{{room.usertwo.username}}</li>
+                <li class="list-group-item" onclick="getMessageOnClick(`{{room.usertwo.userid}}`)" id = "{{room.usertwo.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"> <img src="{% get_media_prefix %}{{room.usertwo.profileimg}}" class="rounded-circle nav-user-icon" >{{room.usertwo.username}}</li>
                 {% elif user.id == room.usertwo.userid %}
-                <li class="list-group-item" onclick="getMessage(`{{room.userone.userid}}`);" id = "{{room.userone.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"><img src="{% get_media_prefix %}{{room.userone.profileimg}}" class="rounded-circle nav-user-icon">{{room.userone.username}}</li>
+                <li class="list-group-item" onclick="getMessageOnClick(`{{room.userone.userid}}`);" id = "{{room.userone.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"><img src="{% get_media_prefix %}{{room.userone.profileimg}}" class="rounded-circle nav-user-icon">{{room.userone.username}}</li>
                 {% else %}
                 <li class="list-group-item"></li>
                 {% endif %}
