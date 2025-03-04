@@ -178,8 +178,7 @@ function printProductRating(id)
     } */
 
   var currentMessageUser;
-  function getMessageOnClick(userid)
-  { 
+  function getMessageOnClick(userid) { 
     if (currentMessageUser!=null)
     {
     console.log('hello');
@@ -220,7 +219,6 @@ function printProductRating(id)
         var textbox = document.getElementById("message")
         textbox.style.display = 'inline'; 
         document.getElementById("Send").style.display = 'inline';
-        messages.scrollTop = messages.scrollHeight;
       }
     
       )
