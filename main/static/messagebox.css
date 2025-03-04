@@ -1,0 +1,30 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    background-color:#fff;
+    overflow-y: scroll;
+    overflow-x:hidden;
+
+    .me,
+    .you {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background-color:#fff;
+        overflow-wrap: break-word;
+    }
+
+    .me {
+        margin-left: auto;
+        border: solid 2px paleturquoise;
+        max-width: 40%;
+        background-color:#fff;
+    }
+    .you {
+        margin-right: auto;
+        border: solid 2px plum;
+        max-width: 40%;
+        background-color:#fff;
+    }
+}
