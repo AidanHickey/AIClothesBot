@@ -316,7 +316,7 @@ def like_post(request):
     if like_filter==None:
         new_like=Likedposts.objects.create(postid=post,userid=user_profile)
         new_like.save()
-        new_notif = Notifications.objects.create(content=new_like.userid.firstname + " " + new_like.userid.lastname + " liked your post.", userid = new_like.postid.userid, link = '')
+        new_notif = Notifications.objects.create(content=new_like.userid.username + " liked your post.", userid = new_like.postid.userid, link = '')
         new_notif.save()
        
     else:
@@ -324,7 +324,6 @@ def like_post(request):
     return redirect('main:index')
 
 def profile(request, userid):
-    start_time = time.time()
     try:
         user_profile = Users.objects.get(userid=userid)
     except Users.DoesNotExist:  
@@ -355,7 +354,6 @@ def profile(request, userid):
         "user_followers":user_followers,
         "user_following":user_following,
     }
-    print("Loading time: --- %s seconds ---" % (time.time() - start_time))
     return render(request, "profile.html", info)
 
 @login_required(login_url='main:signin')
@@ -377,7 +375,7 @@ def follow(request):
         else:
             new_follower=Followers.objects.create(fromuser=fromuser, touser=touser)
             new_follower.save()
-            new_notif = Notifications.objects.create(content=new_follower.fromuser.firstname + " " + new_follower.fromuser.lastname + " followed you.", userid = new_follower.touser, link = '/profile/'+ str(new_follower.fromuser.userid))
+            new_notif = Notifications.objects.create(content=new_follower.fromuser.username + " followed you.", userid = new_follower.touser, link = '/profile/'+ str(new_follower.fromuser.userid))
             new_notif.save()
 
             return redirect('/profile/'+str(touser.userid))
