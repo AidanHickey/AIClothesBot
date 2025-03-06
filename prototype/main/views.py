@@ -183,8 +183,18 @@ def marketplace(request):
         product_list = product_list.filter(tags__name=season)
     else:
         products = Products.objects.all()
+        
+    if category_filter:  
+        product_list = product_list.filter(category=category_filter)
+        
+    if season:
+        product_list = product_list.filter(tags__name=season)
+    else:
+        products = Products.objects.all()
 
     all_tags = Tag.objects.all()
+
+    categories = Products.objects.values_list('category', flat=True).distinct()
 
     categories = Products.objects.values_list('category', flat=True).distinct()
 

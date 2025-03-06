@@ -3,16 +3,14 @@ from .models import Products
 from django import forms
 from taggit.forms import TagWidget
 
-# Custom form for managing tags
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Products
         fields = ['productname', 'price', 'category', 'rating', 'tags']
         widgets = {
-            'tags': TagWidget()  # Use TagWidget to make tag selection user-friendly
+            'tags': TagWidget()  
         }
 
-# Register the Product model with the custom form
 class ProductAdmin(admin.ModelAdmin):
     form = ProductForm
     list_display = ('productname', 'price', 'category', 'rating', 'type', 'size', 'color') 
@@ -20,5 +18,4 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'type', 'size', 'color')  
     fields = ('productname', 'price', 'category', 'rating', 'tags', 'type', 'size', 'color')  
 
-# Register the model and admin class
 admin.site.register(Products, ProductAdmin)
