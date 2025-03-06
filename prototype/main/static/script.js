@@ -177,7 +177,17 @@ function printProductRating(id)
     
     } */
 
-  
+  var currentMessageUser;
+  function getMessageOnClick(userid) { 
+    if (currentMessageUser!=null)
+    {
+    console.log('hello');
+    clearInterval(currentMessageUser);
+    }
+    getMessage(userid);
+    currentMessageUser = setInterval(getMessage, 3000 ,userid);
+  }
+
     function getMessage(userid) {
       $.ajax({
         type: "GET",
@@ -208,10 +218,7 @@ function printProductRating(id)
         header.innerHTML = `<h5> Messages with ${roomName.innerText}`
         var textbox = document.getElementById("message")
         textbox.style.display = 'inline'; 
-        textbox.value = ""
         document.getElementById("Send").style.display = 'inline';
-        messages.scrollTop = messages.scrollHeight;
-        setTimeout(getMessage(userid), 3000);
       }
     
       )
@@ -227,7 +234,9 @@ $(document).ready(function () {
         url: `send_message`,
         data: formData, 
         success: function(response){
-        getMessage(response)
+          var textbox = document.getElementById("message")
+          textbox.value='';
+          getMessage(response)
         },
         error: function (response) {
         },
