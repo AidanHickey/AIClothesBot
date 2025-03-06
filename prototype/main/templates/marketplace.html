@@ -98,7 +98,13 @@
 
                         <label for="max_price">Max Price:</label>
                         <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}">
-
+			<label for="category">Select Category:</label>
+			    <select name="category" id="category">
+			        <option value="">All Categories</option>
+			        {% for cat in categories %}
+			            <option value="{{ cat }}" {% if cat == category_filter %}selected{% endif %}>{{ cat }}</option>
+			        {% endfor %}
+			    </select>
                         <label for="tag">Tag:</label>
                         <select name="tag">
                             <option value="">Select Tag</option>
@@ -116,6 +122,7 @@
 
     <div class="container mt-4">
         <h2 class="text-center my-4">Marketplace</h2>
+<button id="season-filter-button">Filter by Season</button>
 
         <div id="loop" class="row">
             {% for p in products %}
@@ -163,6 +170,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+document.getElementById("season-filter-button").addEventListener("click", function() {
+    var today = new Date();
+    var currentMonth = today.getMonth() + 1; // Months are zero-based, so add 1
+    let seasonTag = "";
+    if (currentMonth >= 3 && currentMonth <= 5) {
+        seasonTag = "spring";  // Spring is from March to May
+    } else if (currentMonth >= 6 && currentMonth <= 8) {
+        seasonTag = "summer";  // Summer is from June to August
+    } else {
+        seasonTag = "winter";  // Winter (including fall) is from September to February
+    }
+    var urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('season', seasonTag);
+    window.location.href = "?" + urlParams.toString();});
+</script>
 </body>
 
 </html>
