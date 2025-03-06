@@ -147,17 +147,7 @@ def send_message(request):
    
 
 
-def marketplace(request):
-    search_query = request.GET.get('search', '')
-    min_price = request.GET.get('min_price', '')
-    max_price = request.GET.get('max_price', '')
-    clothing_type = request.GET.get('type', '')
-    size = request.GET.get('size', '')
-    color = request.GET.get('color', '')
-    category_filter = request.GET.get('category', '')
-    tag = request.GET.get('tag', '')
-    season = request.GET.get('season')
-    return render(request, 'index.html')
+
 
 def get_favorite(request,userid):
     response=list(FavoritedProducts.objects.filter(userid=userid).values('productid'))
@@ -260,7 +250,9 @@ def marketplace(request):
     clothing_type = request.GET.get('type', '')
     size = request.GET.get('size', '')
     color = request.GET.get('color', '')
+    category_filter = request.GET.get('category', '')
     tag = request.GET.get('tag', '')
+    season = request.GET.get('season')
 
     product_list = Products.objects.all()
 
