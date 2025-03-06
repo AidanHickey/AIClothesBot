@@ -148,7 +148,9 @@ def marketplace(request):
     clothing_type = request.GET.get('type', '')
     size = request.GET.get('size', '')
     color = request.GET.get('color', '')
+    category_filter = request.GET.get('category', '')
     tag = request.GET.get('tag', '')
+    season = request.GET.get('season')
 
     product_list = Products.objects.all()
 
@@ -173,8 +175,23 @@ def marketplace(request):
 
     if tag:
         product_list = product_list.filter(tags__name__in=[tag])
+        
+    if category_filter:  
+        product_list = product_list.filter(category=category_filter)
+        
+    if season:
+        product_list = product_list.filter(tags__name=season)
+    else:
+        products = Products.objects.all()
 
     all_tags = Tag.objects.all()
+
+    categories = Products.objects.values_list('category', flat=True).distinct()
+
+    # Paginate results
+    paginator = Paginator(product_list, 10)
+    page = request.GET.get('page')
+    products = paginator.get_page(page)
 
     # Paginate results
     paginator = Paginator(product_list, 10)
