@@ -53,39 +53,6 @@ def apigrabber(request):
             b.save()
     return render(request, 'index.html')
 
-def get_favorite(request,userid):
-    response=list(FavoritedProducts.objects.filter(userid=userid).values('productid'))
-    return JsonResponse(response, content_type='application/json', safe=False)
-
-def get_user(request):
-    if request.method == "POST":
-        response=list(Users.objects.filter(Q(firstname__contains=request.POST['get-user-text']) | Q(lastname__contains=request.POST['get-user-text'])).exclude(userid=request.user.id).values())
-    return JsonResponse(response, content_type='application/json', safe=False)
-
-def create_chat(request):
-    if request.method == "POST":
-        if not ChatRooms.objects.filter( Q(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser']) | Q(userone_id=request.POST['touser'],usertwo_id=request.POST['fromuser'])):
-            room = ChatRooms(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser'])
-            room.save()
-    return HttpResponse()
-
-def read_notif(request):
-    if request.method == "POST":
-        user_profile = Users.objects.get(userid=request.user.id)
-        if (user_profile):
-            notification = Notifications.objects.filter(userid = request.user.id)
-            notification.update(status='read')
-    return HttpResponse()
-
-
-# def get_inbox(request,userid):
-#     room = ChatRooms.objects.filter(Q(userone=userid) | Q(usertwo=userid))
-#     data = []
-#     for i in room:
-#         message = Messages.objects.filter( (Q(fromuser=i.userone.userid) & Q(touser=i.usertwo.userid)) | (Q(fromuser=i.usertwo.userid) & Q(touser=i.userone.userid)) ).order_by('-created_at').values().first()
-#         item = {'id': i.chatroomid, 'userOneID':i.userone.userid, 'userTwoID':i.usertwo.userid,'userOneName':i.userone.username,'userTwoName':i.usertwo.username, 'lastMessageSent': message['content']}
-#         data.append(item)
-#     return JsonResponse(data, content_type='application/json', safe=False)
 
 
 def change_favorite(request,userid, productid):
@@ -184,62 +151,7 @@ def read_notif(request):
 #     return JsonResponse(data, content_type='application/json', safe=False)
 
 
-def change_favorite(request,userid, productid):
-    count = FavoritedProducts.objects.filter(productid=productid,userid=userid).count()
-    if (count > 0):
-         FavoritedProducts.objects.filter(productid=productid,userid=userid).delete()
-    else:
-         user = Users.objects.get(userid=userid)
-         product = Products.objects.get(productid=productid)
-         FavoritedProducts.objects.create(productid=product,userid=user,date=datetime.datetime.now())
 
-    return JsonResponse(productid, content_type='application/json', safe=False)
-
-def message(request):
-    if request.user.is_authenticated:
-        user_profile = Users.objects.get(username=request.user.username)
-        rooms = ChatRooms.objects.filter(Q(userone=request.user.id) | Q(usertwo=request.user.id))
-        users = Users.objects.exclude(userid = user_profile.userid)
-        notification = Notifications.objects.filter(userid=request.user.id)
-        notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
-
-    if user_profile:
-        return render(request, 'message.html', {'user_profile': user_profile, 'rooms' : rooms, 'users':users,  'notification':notification,  'notification_count':notification_count}) 
-    return render(request, 'signin.html')
-
-def get_message(request,userid):
-    start_time = time.time()
-    message = Messages.objects.filter( (Q(fromuser=userid) & Q(touser=request.user.id)) | (Q(fromuser=request.user.id) & Q(touser=userid)) ).order_by('created_at')
-    data = []
-    if message:
-        for m in message:
-            if (request.user.id==m.fromuser_id):
-                tag = "send"
-            else:
-                tag = "receive"
-            item = {'id':m.messageid, 'fromuser':m.fromuser_id, 'touser':m.touser_id,'content':m.content,'tag':tag, 'created_at':m.created_at,'chatroomid':m.chatroomid_id }
-            data.append(item)
-        print("Getting time: --- %s seconds ---" % (time.time() - start_time))
-        return JsonResponse(data, content_type='application/json', safe=False)
-    else:
-        room = ChatRooms.objects.get( (Q(userone=userid) & Q(usertwo=request.user.id)) | (Q(userone=request.user.id) & Q(usertwo=userid)) )
-        item = {'chatroomid':room.chatroomid }
-        data.append(item)
-        return JsonResponse(data, content_type='application/json', safe=False)
-
-
-def send_message(request):
-    if request.method == "POST":
-        start_time = time.time()
-        fromUser = Users.objects.get(userid=request.user.id)
-        toUser = Users.objects.get(userid=request.POST['touser'])
-        chatroom = ChatRooms.objects.get(chatroomid=request.POST['chatroomid'])
-        message = Messages.objects.create(fromuser=fromUser,touser=toUser,content=request.POST['message'],created_at=datetime.datetime.now(),chatroomid=chatroom)
-        message.save()
-        print("Saving time: --- %s seconds ---" % (time.time() - start_time))
-        return HttpResponse(str(toUser.userid))
-    
-    return HttpResponse()
    
 
 
