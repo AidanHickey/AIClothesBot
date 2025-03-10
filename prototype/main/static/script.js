@@ -49,6 +49,35 @@ function printProductRating(id)
     }
 }
 
+function likeEvent(postid) {   
+  $.ajax({
+    url: `/like-post/${postid}`, 
+    type: 'GET'
+  })
+  .done(response => {
+    var likeText = document.getElementById(`likeBtn${postid}`);
+    var likeNumber = document.getElementById(`likeNumber${postid}`);
+    if (response.status == "Unliked")
+    {
+        likeText.innerHTML = `<i class="fas fa-thumbs-up"></i> Like`
+        
+    }
+    else {
+    likeText.innerHTML = `<i class="fas fa-thumbs-up"></i> Liked`
+    }
+    if (response.count == 1)
+    {
+      likeNumber.innerHTML = `Liked by 1 person`;
+    }
+    else if (response.count >1 )
+    {
+      likeNumber.innerHTML = `Liked by ${response.count} people`
+    }
+    else likeNumber.innerHTML = `No likes yet`
+    }
+  )
+}
+
 
 
   function updateStage(userid) {

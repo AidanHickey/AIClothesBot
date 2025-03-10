@@ -22,16 +22,17 @@ def index(request):
         user_profile = Users.objects.get(username=request.user.username)
         notification = Notifications.objects.filter(userid=request.user.id)
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
+        liked_posts = Likedposts.objects.filter(userid=request.user.id).values_list('postid', flat=True)
     
     
     user_following = Followers.objects.filter(fromuser=user_profile).values_list('touser', flat=True)
     feed_list_following = Posts.objects.filter(userid__in=user_following)
     other_posts = Posts.objects.exclude(userid__in=user_following).exclude(userid=user_profile)
     if user_profile:
-        return render(request, 'dashboard.html', {'posts_following':feed_list_following, "other_posts":other_posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count})
+        return render(request, 'dashboard.html', {'posts_following':feed_list_following, "other_posts":other_posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count, 'liked_posts':liked_posts})
     else:
         feed_list=Posts.objects.all()
-        return render(request, 'dashboard.html', {'posts':feed_list})
+        return render(request, 'dashboard.html', {'posts':feed_list,'liked_posts':{}})
     
 
 def apigrabber(request):
@@ -340,9 +341,8 @@ def upload(request):
     return render(request, "upload.html")
 
 @login_required(login_url='main:signin')
-def like_post(request):
+def like_post(request, postid):
     user_profile = Users.objects.get(userid=request.user.id)
-    postid=request.GET.get("postid")
 
     post=Posts.objects.get(postid=postid)
     
@@ -352,10 +352,15 @@ def like_post(request):
         new_like.save()
         new_notif = Notifications.objects.create(content=new_like.userid.username + " liked your post.", userid = new_like.postid.userid, link = '')
         new_notif.save()
+        status = "Liked"
+        count = Likedposts.objects.filter(postid=post).count() 
        
     else:
         like_filter.delete()
-    return redirect('main:index')
+        status = "Unliked"
+        count = Likedposts.objects.filter(postid=post).count() 
+    response = {'status':status, 'count':count }
+    return JsonResponse(response)
 
 def profile(request, userid):
     try:
