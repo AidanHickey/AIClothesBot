@@ -13,6 +13,7 @@ from taggit.models import Tag
 from django.db.models import Q
 import datetime
 import time
+from itertools import chain
 
 
 def index(request):
@@ -21,13 +22,16 @@ def index(request):
         user_profile = Users.objects.get(username=request.user.username)
         notification = Notifications.objects.filter(userid=request.user.id)
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
-    posts = Posts.objects.all()
     
-   
+    
+    user_following = Followers.objects.filter(fromuser=user_profile).values_list('touser', flat=True)
+    feed_list_following = Posts.objects.filter(userid__in=user_following)
+    other_posts = Posts.objects.exclude(userid__in=user_following).exclude(userid=user_profile)
     if user_profile:
-        return render(request, 'dashboard.html', {'posts':posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count})
+        return render(request, 'dashboard.html', {'posts_following':feed_list_following, "other_posts":other_posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count})
     else:
-        return render(request, 'dashboard.html', {'posts':posts})
+        feed_list=Posts.objects.all()
+        return render(request, 'dashboard.html', {'posts':feed_list})
     
 
 def apigrabber(request):
@@ -181,6 +185,9 @@ def marketplace(request):
     page = request.GET.get('page')
     products = paginator.get_page(page)
 
+    user_profile = None
+    notification = None
+    notification_count = 0
     if request.user.is_authenticated:
         user_profile = Users.objects.get(username=request.user.username)
         notification = Notifications.objects.filter(userid=request.user.id)
@@ -216,6 +223,8 @@ def marketplace(request):
 
 def signup(request):
     if request.method == "POST":
+        firstname=request.POST['firstname']
+        lastname=request.POST['lastname']
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
@@ -230,12 +239,14 @@ def signup(request):
                 messages.info(request, 'Username is already taken')
                 return redirect('main:signup')  # No .html
             else:
-                user = User.objects.create_user(username=username, password=password, email=email)
+                user = User.objects.create_user(username=username, password=password, email=email, first_name=firstname, last_name=lastname)
                 user.save()
 
                 # Create the actual User profile that would be saved in our own database
                 user_object = User.objects.get(username=username)
                 new_user = Users.objects.create(
+                    firstname=user_object.first_name,
+                    lastname=user_object.last_name,
                     username=user_object.username, 
                     userid=user_object.id, 
                     password=user_object.password, 
@@ -356,6 +367,7 @@ def profile(request, userid):
     }
     return render(request, "profile.html", info)
 
+    
 @login_required(login_url='main:signin')
 def follow(request):
     if request.method=="POST":
@@ -381,3 +393,17 @@ def follow(request):
             return redirect('/profile/'+str(touser.userid))
     else:
         return redirect("/") 
+
+def search(request):
+    query=request.GET.get("search", "")
+
+    if query:
+        results=Users.objects.filter(
+            Q(username__icontains=query)|
+            Q(firstname__icontains=query)|
+            Q(lastname__icontains=query)
+        )
+    else:
+        results=[]
+    return render(request, 'search.html', {'results': results})
+
