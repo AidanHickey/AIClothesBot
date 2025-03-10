@@ -105,6 +105,8 @@ class Products(models.Model):
     type = models.CharField(max_length=255, blank=True)  
     size = models.CharField(max_length=50, blank=True) 
     color = models.CharField(max_length=50, blank=True)  
+    season = models.CharField(max_length=50, blank=True, null=True)
+    link = models.CharField(db_column='LINK', max_length=500, blank=True, null=True)  # Field name made lowercase.
     
     def __str__(self):
         return self.productname  
@@ -252,3 +254,13 @@ class DjangoSession(models.Model):
     class Meta:
         managed = False
         db_table = 'django_session'
+
+class Friends(models.Model):
+    friendid = models.AutoField(db_column='FRIENDID', primary_key=True)  # Field name made lowercase.
+    userone = models.ForeignKey('Users', models.DO_NOTHING, db_column='userone', blank=True, null=True)
+    usertwo = models.ForeignKey('Users', models.DO_NOTHING, db_column='usertwo', related_name='friends_usertwo_set', blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Friends'

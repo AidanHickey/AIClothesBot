@@ -215,7 +215,7 @@ function printProductRating(id)
         currentReceiver.value = userid;
         var header = document.getElementById("messageHeader");
         var roomName = document.getElementById(`${userid}`)
-        header.innerHTML = `<h5> Messages with ${roomName.innerText}`
+        header.innerHTML = `<h5> Messages with <a href="../profile/${userid}">${roomName.innerText}</a> </h5>`
         var textbox = document.getElementById("message")
         textbox.style.display = 'inline'; 
         document.getElementById("Send").style.display = 'inline';

@@ -127,11 +127,13 @@
 
         <div id="loop" class="row">
             {% for p in products %}
-            <div class="col-md-3">
+                <div class="col-md-3">
                 <div class="card">
                     <div id="product" class="card-body">
-                        <h5>{{ p.productname }}</h5>
+                    <a href="{{p.link}}">
+                        <h5>{{ p.productname }}</h5>  </a>
                         <img src="{{ p.image }}" width="200" height="300">
+                  
                         <h6>{{ p.price }}$</h6>
                         <div id="rating{{ p.productid }}" data-rating="{{ p.rating }}"></div>
                         <button id="favoriteBtn{{ p.productid }}" onclick="onFavorite('{{ p.productid }}', '{{ request.user.id }}')">Favorite</button>
@@ -141,6 +143,7 @@
                     </div>
                 </div>
             </div>
+ 
             {% endfor %}
 
             {% if user.is_authenticated %}
