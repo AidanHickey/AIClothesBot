@@ -7,13 +7,14 @@
     <title>Wardrobe Wise</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="stylesheet" href="{% static 'messagebox.css' %}">
     <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'script.js' %}"></script>
     <script>
         var static_url = "{% get_static_prefix %}";
         var media_url = "{% get_media_prefix %}";
+        var get_message_url = "{% url 'main:message' %}";
     </script>
   
 
@@ -122,36 +123,33 @@
                 </ul>
             </div>
     
-            <!-- Message Section -->
-            <div class="col-lg-1">
-                <h5>People</h5>
-                <ul class="list-group list-group-flush" style="height: 400px ; overflow-x: auto">
-                {% for room in rooms %}
-                {% if user.id == room.userone.userid %}
-                <li class="list-group-item" onclick="getMessageOnClick(`{{room.usertwo.userid}}`)" id = "{{room.usertwo.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"> <img src="{% get_media_prefix %}{{room.usertwo.profileimg}}" class="rounded-circle nav-user-icon" >{{room.usertwo.username}}</li>
-                {% elif user.id == room.usertwo.userid %}
-                <li class="list-group-item" onclick="getMessageOnClick(`{{room.userone.userid}}`);" id = "{{room.userone.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"><img src="{% get_media_prefix %}{{room.userone.profileimg}}" class="rounded-circle nav-user-icon">{{room.userone.username}}</li>
-                {% else %}
-                <li class="list-group-item">{{room.chatroomid}} + {{user.id}} + {{room.userone}} + {{room.usertwo}}</li>
-                {% endif %}
-                {% endfor %}
-                </ul>
-
-                
-            </div>
-            <div class="col-lg-5">
-                <h5 id="messageHeader">Messages</h5>
-                <div class="chat-container">
-                <div id="chat-container" style="height: 400px";></div>
+            <!-- Favorite Section -->
+            <div class="col-lg-6">
+            {% for p in  favoriteList %}
+               <div class="col-md-3">
+               <div class="card">
+                    <div id="product" class="card-body">
+                    <a href="{{p.productid.link}}">
+                        <h5>{{ p.productid.productname }}</h5>  </a>
+                        <img src="{{ p.productid.image }}" width="200" height="300">
+                  
+                        <h6>{{ p.productid.price }}$</h6>
+                        <div id="rating{{ p.productid.productid }}" data-rating="{{ p.productid.rating }}"></div>
+                        <button id="favoriteBtn{{ p.productid.productid }}" onclick="onFavorite('{{ p.productid.productid }}', '{{ request.user.id }}')" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;">Favorite</button>
+                        <script type="text/javascript">
+                            printProductRating("{{ p.productid.productid }}");
+                        </script>
+                    </div>
                 </div>
-                <form method="POST" id="message-form">
-                    {% csrf_token %}
-                    <input type="text" style="display:none; width:84%"  name ="message" id="message">
-                    <input type="hidden" name ="touser" id="touser">
-                    <input type="hidden" name ="chatroomid" id="chatroomid">
-                    <button type="submit" id="Send" style="display:none;width:15%">Send</button>
-                </form>
-            </div>
+                </div>
+
+ 
+            {% endfor %}
+            <script type="text/javascript">
+                updateStage("{{ user.id }}");
+            </script>
+          </div>
+            
             <!-- Right Sidebar -->
     <div class="col-lg-3">
         <h5>Events</h5>
@@ -167,7 +165,23 @@
     </div>
     </div>
 
+    <div class="pagination">
+        <span class="step-links">
+            {% if favoriteList.has_previous %}
+            <a href="?page=1&search={{ request.GET.search }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&type={{ request.GET.type }}&size={{ request.GET.size }}&color={{ request.GET.color }}&tag={{ request.GET.tag }}">« first</a>
+            <a href="?page={{ favoriteList.previous_page_number }}&search={{ request.GET.search }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&type={{ request.GET.type }}&size={{ request.GET.size }}&color={{ request.GET.color }}&tag={{ request.GET.tag }}">previous</a>
+            {% endif %}
 
+            <span class="current">
+                Page {{ favoriteList.number }} of {{ favoriteList.paginator.num_pages }}.
+            </span>
+
+            {% if favoriteList.has_next %}
+            <a href="?page={{ favoriteList.next_page_number }}&search={{ request.GET.search }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&type={{ request.GET.type }}&size={{ request.GET.size }}&color={{ request.GET.color }}&tag={{ request.GET.tag }}">next</a>
+            <a href="?page={{ favoriteList.paginator.num_pages }}&search={{ request.GET.search }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}&type={{ request.GET.type }}&size={{ request.GET.size }}&color={{ request.GET.color }}&tag={{ request.GET.tag }}">last »</a>
+            {% endif %}
+        </span>
+    </div>
     <!-- Bootstrap JS -->
     
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

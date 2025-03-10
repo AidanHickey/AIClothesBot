@@ -25,7 +25,10 @@ urlpatterns = [
     path("get_user", views.get_user,name='get_user'),
     path("send_message", views.send_message, name='send_message'),
     path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite'),
-    path("read_notif", views.read_notif, name='read_notif')
+    path("read_notif", views.read_notif, name='read_notif'),
+    path("create_friend", views.create_friend, name='create_friend'),
+    path("friend", views.friend, name='friend'),
+    path("favorite", views.favorite, name='favorite')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
