@@ -467,8 +467,8 @@ def favorite(request):
     
 
 def search(request):
-    query=request.GET.get("search", "")
-
+    query=request.GET.get("query", "").strip()
+    results=[]
     if query:
         results=Users.objects.filter(
             Q(username__icontains=query)|
