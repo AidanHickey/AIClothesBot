@@ -8,12 +8,12 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="stylesheet" href="{% static 'messagebox.css' %}">
     <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'script.js' %}"></script>
     <script>
         var static_url = "{% get_static_prefix %}";
         var media_url = "{% get_media_prefix %}";
+        var get_message_url = "{% url 'main:message' %}";
     </script>
   
 
@@ -99,11 +99,7 @@
             <div class="col-lg-3">
                 <h5>Quick Links</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <button onclick="location.href='favorite'" class="btn btn-link p-0 text-primary">
-                            <i class="fas fa-user-friends"></i> Favorited Products
-                        </button>
-                    </li>
+                    <li class="list-group-item" ><i class="fas fa-newspaper"></i> Latest News</li>
                     <li class="list-group-item">
                         <button onclick="location.href='friend'" class="btn btn-link p-0 text-primary">
                             <i class="fas fa-user-friends"></i> Friends
@@ -122,36 +118,67 @@
                 </ul>
             </div>
     
-            <!-- Message Section -->
-            <div class="col-lg-1">
-                <h5>People</h5>
+            <!-- Friend Section -->
+            <div class="col-lg-6">
+                <h5>Friends</h5>
                 <ul class="list-group list-group-flush" style="height: 400px ; overflow-x: auto">
-                {% for room in rooms %}
-                {% if user.id == room.userone.userid %}
-                <li class="list-group-item" onclick="getMessageOnClick(`{{room.usertwo.userid}}`)" id = "{{room.usertwo.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"> <img src="{% get_media_prefix %}{{room.usertwo.profileimg}}" class="rounded-circle nav-user-icon" >{{room.usertwo.username}}</li>
-                {% elif user.id == room.usertwo.userid %}
-                <li class="list-group-item" onclick="getMessageOnClick(`{{room.userone.userid}}`);" id = "{{room.userone.userid}}" onMouseOver="this.style.backgroundColor='#71b2e2'" onmouseout="this.style.backgroundColor='#fff';"><img src="{% get_media_prefix %}{{room.userone.profileimg}}" class="rounded-circle nav-user-icon">{{room.userone.username}}</li>
-                {% else %}
-                <li class="list-group-item">{{room.chatroomid}} + {{user.id}} + {{room.userone}} + {{room.usertwo}}</li>
+                {% for friend in friendList %}
+                <li class="list-group-item" >
+                <div style="display: inline;">
+                {% if user.id == friend.userone.userid %}              
+                <img src="{% get_media_prefix %}{{friend.usertwo.profileimg}}" class="rounded-circle nav-user-icon" style="float:left"" >
+                <h5 style="float:left; padding-top: 10px; padding-left: 20px"> {{friend.usertwo.username}} </h5>
+                <form method="POST" id="create_friend">
+                    {% csrf_token %}
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.usertwo.userid}}"">
+                    <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
+                <button id="friendBtn" type="submit" style="background-color: #ee361e;border: #ee361e; padding: 10px 20px;float: right;">
+                Unfriend
+                </button>
+                </form>
+                <form method="POST" id="create_chat_room">
+                    {% csrf_token %}
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.usertwo.userid}}"">
+                    <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
+                <button type="submit" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;float: right;" >
+                Message
+                </button>
+                </form>
+                <button onclick="window.location.href='profile/{{friend.usertwo.userid}}'" style="background-color: #71e293;border: #71e293; padding: 10px 20px;float: right;">
+                    Profile
+                </button>
+                {% elif user.id == friend.usertwo.userid %}
+                <img src="{% get_media_prefix %}{{friend.userone.profileimg}}" class="rounded-circle nav-user-icon" style="float:left"" >
+                <h5 style="float:left; padding-top: 10px; padding-left: 20px"> {{friend.userone.username}} </h5>
+                <form method="POST" id="create_friend">
+                    {% csrf_token %}
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.userone.userid}}"">
+                    <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
+                <button id="friendBtn" type="submit" style="background-color: #ee361e;border: #ee361e; padding: 10px 20px;float: right;" >
+                Unfriend
+                </button>
+                </form>
+                <form method="POST" id="create_chat_room">
+                    {% csrf_token %}
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.userone.userid}}"">
+                    <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
+                <button type="submit" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;float: right;" >
+                Message
+                </button>
+                </form>
+                <button onclick="window.location.href='profile/{{friend.userone.userid}}'" style="background-color: #71e293;border: #71e293; padding: 10px 20px; float: right;"></button>
+                Profile
+                </button>
                 {% endif %}
+               
+                </div>
+                </li>
                 {% endfor %}
                 </ul>
 
                 
             </div>
-            <div class="col-lg-5">
-                <h5 id="messageHeader">Messages</h5>
-                <div class="chat-container">
-                <div id="chat-container" style="height: 400px";></div>
-                </div>
-                <form method="POST" id="message-form">
-                    {% csrf_token %}
-                    <input type="text" style="display:none; width:84%"  name ="message" id="message">
-                    <input type="hidden" name ="touser" id="touser">
-                    <input type="hidden" name ="chatroomid" id="chatroomid">
-                    <button type="submit" id="Send" style="display:none;width:15%">Send</button>
-                </form>
-            </div>
+            
             <!-- Right Sidebar -->
     <div class="col-lg-3">
         <h5>Events</h5>

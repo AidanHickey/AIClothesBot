@@ -97,8 +97,24 @@
                 Send Message
               </button>
             </form>
+            </a>
+            <a>
+              <form method="POST" id="create_friend">
+                {% csrf_token %}
+                <input type="hidden" name ="touser" id="touser" value = "{{user_profile.userid}}"">
+                <input type="hidden" name ="fromuser" id="fromuser" value="{{current_user.userid}}">
+              {% if friend_button_text == "Unfriend" %}
+              <button id="friendBtn" type="submit" style="background-color: rgb(238, 54, 30);border: rgb(238, 54, 30);width:200px; height:40px;  font-size: 16px; padding: 10px 20px; " >
+               {{friend_button_text}}
+              </button>
+              {% else %}
+             <button id="friendBtn" type="submit" style="background-color: #71e293;border: #71e293;width:200px; height:40px;  font-size: 16px; padding: 10px 20px; " >
+              {{friend_button_text}}
+             </button>
+              {% endif %}
+            </form>
             </a>    
-            {% endif %}
+          {% endif %}
           </div>
         
 
@@ -167,6 +183,7 @@
                   <div class="central-meta">
                     <ul class="photos">
                       {% for post in user_posts %}
+                      {% if post.image %}
                       <li>
                         <a
                           class="strip"
@@ -181,6 +198,7 @@
                             alt=""
                         /></a>
                       </li>
+                      {% endif %}
                       {% endfor %}
                     </ul>
                     <!--<div class="lodmore"><button class="btn-view btn-load-more"></button></div>-->

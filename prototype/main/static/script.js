@@ -34,21 +34,48 @@ function printProductRating(id)
 {   
     var wrapper = document.getElementById(`rating${id}`);
     var count = document.getElementById(`rating${id}`).getAttribute('data-rating');
-    var myHTML = '';
     for (let i = 0; i < 5; i++) {
     if (count >= 1)
     {
-    myHTML+= "<span class='fa fa-star checked'></span>";
+      wrapper.innerHTML+= "<span class='fa fa-star checked'></span>";
     count--;
     }
     else if (count > 0 && count < 1)
     {
-    myHTML+= "<span class='fa fa-star-half-full checked'></span>"    
+      wrapper.innerHTML+= "<span  class='fa fa-star-half-full checked'></span>"    
     count--;
     }
-    else  myHTML+= "<span class='fa fa-star-o checked'></span>";
+    else  wrapper.innerHTML+= "<span  class='fa fa-star-o checked'></span>";
     }
-   wrapper.innerHTML = myHTML;
+}
+
+function likeEvent(postid) {   
+  $.ajax({
+    url: `/like-post/${postid}`, 
+    type: 'GET'
+  })
+  .done(response => {
+    var likeText = document.getElementById(`likeBtn${postid}`);
+    var likeNumber = document.getElementById(`likeNumber${postid}`);
+    if (response.status == "Unliked")
+    {
+        likeText.innerHTML = `<i class="fas fa-thumbs-up"></i> Like`
+        
+    }
+    else {
+    likeText.innerHTML = `<i class="fas fa-thumbs-up"></i> Liked`
+    }
+    if (response.count == 1)
+    {
+      likeNumber.innerHTML = `Liked by 1 person`;
+    }
+    else if (response.count >1 )
+    {
+      likeNumber.innerHTML = `Liked by ${response.count} people`
+    }
+    else likeNumber.innerHTML = `No likes yet`
+    }
+  )
 }
 
 
@@ -118,6 +145,37 @@ function printProductRating(id)
       })
     })
   })
+
+  $(document).ready(function () {
+    $('#create_friend').submit(function(e){
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        type:"POST",
+        url: `../create_friend`,
+        data: formData, 
+        success: function(response){
+        var friendBtn = document.getElementById("friendBtn");
+        friendBtn.innerHTML = `${response}`;
+        if (response=="Unfriend")
+        {
+        friendBtn.style.backgroundColor="rgb(238, 54, 30)";
+        friendBtn.style.borderColor ="rgb(238, 54, 30)";
+        }
+        else {
+          friendBtn.style.backgroundColor="rgb(41, 245, 0)";
+          friendBtn.style.borderColor ="rgb(41, 245, 0)";
+        }
+        },
+        error: function(response) {
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+      
+    })
+  })
+})
 
 
    /* $(document).ready(function () {

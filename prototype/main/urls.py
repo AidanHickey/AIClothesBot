@@ -15,7 +15,7 @@ urlpatterns = [
     path("get_favorite/<int:userid>", views.get_favorite, name='get_favorite'),
     path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite'),
     path("upload", views.upload, name='upload'),
-    path("like-post", views.like_post, name="like-post"), 
+    path("like-post/<int:postid>", views.like_post, name="like-post"), 
    # path("get_inbox/<int:userid>", views.get_inbox, name='get_inbox'),
     path("profile/<int:userid>", views.profile, name='profile'),
     path("follow", views.follow, name='follow'),
@@ -27,6 +27,9 @@ urlpatterns = [
     path("change_favorite/<int:productid>/<int:userid>", views.change_favorite, name='change_favorite'),
     path("read_notif", views.read_notif, name='read_notif'),
     path("search", views.search, name="search"),
+    path("create_friend", views.create_friend, name='create_friend'),
+    path("friend", views.friend, name='friend'),
+    path("favorite", views.favorite, name='favorite')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

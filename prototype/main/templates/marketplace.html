@@ -136,7 +136,7 @@
                   
                         <h6>{{ p.price }}$</h6>
                         <div id="rating{{ p.productid }}" data-rating="{{ p.rating }}"></div>
-                        <button id="favoriteBtn{{ p.productid }}" onclick="onFavorite('{{ p.productid }}', '{{ request.user.id }}')">Favorite</button>
+                        <button id="favoriteBtn{{ p.productid }}" onclick="onFavorite('{{ p.productid }}', '{{ request.user.id }}')" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;">Favorite</button>
                         <script type="text/javascript">
                             printProductRating("{{ p.productid }}");
                         </script>

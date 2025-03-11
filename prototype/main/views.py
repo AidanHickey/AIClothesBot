@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import FavoritedProducts, Products, Users, Posts, Messages, ChatRooms, Likedposts, Followers,Notifications
+from .models import FavoritedProducts, Friends, Products, Users, Posts, Messages, ChatRooms, Likedposts, Followers,Notifications
 import json
 from django.contrib.auth.models import User, auth
 from django.http import JsonResponse
@@ -22,16 +22,17 @@ def index(request):
         user_profile = Users.objects.get(username=request.user.username)
         notification = Notifications.objects.filter(userid=request.user.id)
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
+        liked_posts = Likedposts.objects.filter(userid=request.user.id).values_list('postid', flat=True)
     
     
     user_following = Followers.objects.filter(fromuser=user_profile).values_list('touser', flat=True)
     feed_list_following = Posts.objects.filter(userid__in=user_following)
     other_posts = Posts.objects.exclude(userid__in=user_following).exclude(userid=user_profile)
     if user_profile:
-        return render(request, 'dashboard.html', {'posts_following':feed_list_following, "other_posts":other_posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count})
+        return render(request, 'dashboard.html', {'posts_following':feed_list_following, "other_posts":other_posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count, 'liked_posts':liked_posts})
     else:
         feed_list=Posts.objects.all()
-        return render(request, 'dashboard.html', {'posts':feed_list})
+        return render(request, 'dashboard.html', {'posts':feed_list,'liked_posts':{}})
     
 
 def apigrabber(request):
@@ -202,10 +203,6 @@ def marketplace(request):
 
     categories = Products.objects.values_list('category', flat=True).distinct()
 
-    # Paginate results
-    paginator = Paginator(product_list, 10)
-    page = request.GET.get('page')
-    products = paginator.get_page(page)
 
     # Paginate results
     paginator = Paginator(product_list, 10)
@@ -344,9 +341,8 @@ def upload(request):
     return render(request, "upload.html")
 
 @login_required(login_url='main:signin')
-def like_post(request):
+def like_post(request, postid):
     user_profile = Users.objects.get(userid=request.user.id)
-    postid=request.GET.get("postid")
 
     post=Posts.objects.get(postid=postid)
     
@@ -356,10 +352,15 @@ def like_post(request):
         new_like.save()
         new_notif = Notifications.objects.create(content=new_like.userid.username + " liked your post.", userid = new_like.postid.userid, link = '')
         new_notif.save()
+        status = "Liked"
+        count = Likedposts.objects.filter(postid=post).count() 
        
     else:
         like_filter.delete()
-    return redirect('main:index')
+        status = "Unliked"
+        count = Likedposts.objects.filter(postid=post).count() 
+    response = {'status':status, 'count':count }
+    return JsonResponse(response)
 
 def profile(request, userid):
     try:
@@ -383,6 +384,10 @@ def profile(request, userid):
         button_text="Unfollow"
     else:
         button_text="Follow"
+    if Friends.objects.filter( Q(userone_id=current_user,usertwo_id=user_profile) | Q(userone_id=user_profile,usertwo_id=current_user)).first():
+        friend_button_text="Unfriend"
+    else:
+        friend_button_text="Friend"
     info={
         "user_profile": user_profile,
         "user_posts":user_posts,
@@ -391,6 +396,7 @@ def profile(request, userid):
         "button_text":button_text,
         "user_followers":user_followers,
         "user_following":user_following,
+        "friend_button_text":friend_button_text,
     }
     return render(request, "profile.html", info)
 
@@ -420,6 +426,45 @@ def follow(request):
             return redirect('/profile/'+str(touser.userid))
     else:
         return redirect("/") 
+    
+def create_friend(request):
+    if request.method == "POST":
+        new_friend = Friends.objects.filter( Q(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser']) | Q(userone_id=request.POST['touser'],usertwo_id=request.POST['fromuser'])).first()
+        if not new_friend:
+            room = Friends(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser'])
+            room.save()
+            responseBtn = "Unfriend"
+        else:
+            new_friend.delete()
+            responseBtn = "Friend"
+    return HttpResponse(responseBtn)
+
+def friend(request):
+    user_profile=None
+    if request.user.is_authenticated:
+        user_profile = Users.objects.get(username=request.user.username)
+        notification = Notifications.objects.filter(userid=request.user.id)
+        notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
+        friendList = Friends.objects.filter(Q(userone_id=request.user.id) | Q(userone_id=request.user.id))
+    if user_profile:
+        return render(request, 'friend.html', {'friendList':friendList, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count}) 
+    return render(request, 'signin.html')
+
+def favorite(request):
+    user_profile=None
+    if request.user.is_authenticated:
+        user_profile = Users.objects.get(username=request.user.username)
+        notification = Notifications.objects.filter(userid=request.user.id)
+        notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
+        favorite = FavoritedProducts.objects.filter(userid=request.user.id)
+           # Paginate results
+        paginator = Paginator(favorite, 3)
+        page = request.GET.get('page')
+        favoriteList = paginator.get_page(page)
+    if user_profile:
+        return render(request, 'favorite.html', {'favoriteList':favoriteList, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count}) 
+    return render(request, 'signin.html')
+    
 
 def search(request):
     query=request.GET.get("query", "").strip()

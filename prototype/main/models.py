@@ -143,6 +143,7 @@ class Users(models.Model):
         db_table = 'Users'
 
 
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
