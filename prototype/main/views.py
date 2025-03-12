@@ -14,7 +14,8 @@ from django.db.models import Q
 import datetime
 import time
 from itertools import chain
-
+from django.views.decorators.csrf import csrf_exempt
+from .models import Comments, Posts
 
 def index(request):
     user_profile=None
@@ -479,3 +480,58 @@ def search(request):
         results=[]
     return render(request, 'search.html', {'results': results})
 
+@login_required(login_url='main:signin')
+def post_comment(request):
+    user_profile = Users.objects.get(username=request.user.username)
+    if request.method == "POST":
+        post_id = request.POST.get("post_id")
+        content = request.POST.get("content")
+
+        print(f"Received Comment for Post ID {post_id}: {content}")  # Debugging Line
+
+        if not content.strip():
+            return JsonResponse({"error": "Comment cannot be empty"}, status=400)
+
+        post = get_object_or_404(Posts, postid=post_id)
+        user = Users.objects.get(userid=request.user.id)
+
+        new_comment = Comments.objects.create(
+            userid=user,
+            postid=post,
+            content=content,
+            created_at=datetime.datetime.now()
+        )
+        new_comment.save()
+
+        print("Comment Saved Successfully!")  # Debugging Line
+
+        return JsonResponse({"message": "Comment posted successfully!"}, status=201)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+@login_required(login_url='main:signin')
+def post_reply(request):
+    if request.method == "POST":
+        parent_comment_id = request.POST.get("parent_comment_id")
+        post_id = request.POST.get("post_id")
+        content = request.POST.get("content")
+
+        if not content.strip():
+            return JsonResponse({"error": "Reply cannot be empty"}, status=400)
+
+        post = get_object_or_404(Posts, postid=post_id)
+        parent_comment = get_object_or_404(Comments, commentid=parent_comment_id)
+        user = Users.objects.get(userid=request.user.id)
+
+        new_reply = Comments.objects.create(
+            userid=user,
+            postid=post,
+            content=content,
+            parent=parent_comment,  # This links the reply to the parent comment
+            created_at=datetime.datetime.now()
+        )
+        new_reply.save()
+
+        return JsonResponse({"message": "Reply posted successfully!"}, status=201)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)

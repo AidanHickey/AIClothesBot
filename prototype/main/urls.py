@@ -29,7 +29,9 @@ urlpatterns = [
     path("search", views.search, name="search"),
     path("create_friend", views.create_friend, name='create_friend'),
     path("friend", views.friend, name='friend'),
-    path("favorite", views.favorite, name='favorite')
+    path("favorite", views.favorite, name='favorite'),
+    path("post-comment/", views.post_comment, name="post_comment"),
+    path("post-reply/", views.post_reply, name="post_reply"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

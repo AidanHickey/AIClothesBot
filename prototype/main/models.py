@@ -2,6 +2,7 @@ from django.db import models
 from taggit.managers import TaggableManager
 from datetime import datetime
 
+
 class Comments(models.Model):
     commentid = models.AutoField(db_column='COMMENTID', primary_key=True)  # Field name made lowercase.
     userid = models.ForeignKey('Users', models.DO_NOTHING, db_column='USERID')  # Field name made lowercase.
@@ -265,3 +266,5 @@ class Friends(models.Model):
     class Meta:
         managed = False
         db_table = 'Friends'
+
+        

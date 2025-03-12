@@ -318,3 +318,93 @@ $( "#notification.dropdown" ).on( "mouseover", function() {
     },
     })
   })})
+
+  function toggleCommentBox(postId) {
+    let commentBox = document.getElementById(`commentBox${postId}`);
+    if (commentBox.style.display === "none") {
+        commentBox.style.display = "block";
+    } else {
+        commentBox.style.display = "none";
+    }
+}
+
+function postComment(postId) {
+  let commentInput = document.getElementById(`commentInput${postId}`);
+  let commentText = commentInput.value.trim();
+
+  console.log("Comment Text:", commentText); // Debugging Line
+
+  if (commentText === "") {
+      alert("Comment cannot be empty.");
+      return;
+  }
+
+  $.ajax({
+      type: "POST",
+      url: "/post-comment/",
+      data: {
+          post_id: postId,
+          content: commentText,
+          csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value
+      },
+      success: function(response) {
+          console.log("Comment Posted Successfully!"); // Debugging Line
+          let commentsContainer = document.getElementById(`commentsContainer${postId}`);
+          let newComment = document.createElement("div");
+          newComment.classList.add("comment");
+          newComment.innerHTML = `<strong>You</strong>: ${commentText}`;
+          commentsContainer.appendChild(newComment);
+
+          commentInput.value = ""; // Clear input after posting
+          toggleCommentBox(postId); // Hide the comment box after posting
+      },
+      error: function(error) {
+          console.error("Error posting comment:", error);
+          alert("Failed to post comment. Please try again.");
+      }
+  });
+}
+function toggleReplyBox(commentId) {
+  let replyBox = document.getElementById(`replyBox${commentId}`);
+  if (replyBox.style.display === "none") {
+      replyBox.style.display = "block";
+  } else {
+      replyBox.style.display = "none";
+  }
+}
+
+function postReply(commentId, postId) {
+  let replyInput = document.getElementById(`replyInput${commentId}`);
+  let replyText = replyInput.value.trim();
+
+  if (replyText === "") {
+      alert("Reply cannot be empty.");
+      return;
+  }
+
+  $.ajax({
+      type: "POST",
+      url: "/post-reply/",
+      data: {
+          parent_comment_id: commentId,
+          post_id: postId,
+          content: replyText,
+          csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value
+      },
+      success: function(response) {
+          let repliesContainer = document.getElementById(`repliesContainer${commentId}`);
+          let newReply = document.createElement("div");
+          newReply.classList.add("reply");
+          newReply.innerHTML = `<strong>You</strong>: ${replyText}`;
+          repliesContainer.appendChild(newReply);
+
+          replyInput.value = ""; // Clear input after posting
+          toggleReplyBox(commentId); // Hide the reply box after posting
+      },
+      error: function(error) {
+          console.error("Error posting reply:", error);
+          alert("Failed to post reply. Please try again.");
+      }
+  });
+}
+
