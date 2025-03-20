@@ -140,7 +140,11 @@
                   
                         <h6>{{ p.price }}$</h6>
                         <div id="rating{{ p.productid }}" data-rating="{{ p.rating }}"></div>
+                        {% if user.is_authenticated %}
                         <button id="favoriteBtn{{ p.productid }}" onclick="onFavorite('{{ p.productid }}', '{{ request.user.id }}')" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;">Favorite</button>
+                        {% else %}
+                        <button id="favoriteBtn{{ p.productid }}" onclick="location.href = `{% url 'main:signin' %}`" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;">Favorite</button>
+                        {% endif %}
                         <script type="text/javascript">
                             printProductRating("{{ p.productid }}");
                         </script>
