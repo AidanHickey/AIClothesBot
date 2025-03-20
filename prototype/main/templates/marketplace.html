@@ -131,8 +131,12 @@
                 <div class="card">
                     <div id="product" class="card-body">
                     <a href="{{p.link}}">
-                        <h5>{{ p.productname }}</h5>  </a>
-                        <img src="{{ p.image }}" width="200" height="300">
+                        <h5 style="display: inline-block; 
+                        max-width: 300px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;">{{ p.productname }}</h5>  </a>
+                        <img src="{{ p.image }}" style="height: 220px; width: 200px;">
                   
                         <h6>{{ p.price }}$</h6>
                         <div id="rating{{ p.productid }}" data-rating="{{ p.rating }}"></div>

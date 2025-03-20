@@ -29,6 +29,7 @@ def index(request):
     user_following = Followers.objects.filter(fromuser=user_profile).values_list('touser', flat=True)
     feed_list_following = Posts.objects.filter(userid__in=user_following)
     other_posts = Posts.objects.exclude(userid__in=user_following).exclude(userid=user_profile)
+
     if user_profile:
         return render(request, 'dashboard.html', {'posts_following':feed_list_following, "other_posts":other_posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count, 'liked_posts':liked_posts})
     else:
