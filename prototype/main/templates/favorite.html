@@ -124,14 +124,17 @@
             </div>
     
             <!-- Favorite Section -->
-            <div class="col-lg-6">
             {% for p in  favoriteList %}
                <div class="col-md-3">
                <div class="card">
                     <div id="product" class="card-body">
-                    <a href="{{p.productid.link}}">
-                        <h5>{{ p.productid.productname }}</h5>  </a>
-                        <img src="{{ p.productid.image }}" width="200" height="300">
+                        <a href="{{p.productid.link}}">
+                            <h5 style="display: inline-block; 
+                            max-width: 300px;
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;">{{ p.productid.productname }}</h5>  </a>
+                            <img src="{{ p.productid.image }}" style="height: 220px; width: 200px;">
                   
                         <h6>{{ p.productid.price }}$</h6>
                         <div id="rating{{ p.productid.productid }}" data-rating="{{ p.productid.rating }}"></div>
@@ -143,26 +146,17 @@
                 </div>
                 </div>
 
- 
+               
             {% endfor %}
             <script type="text/javascript">
                 updateStage("{{ user.id }}");
             </script>
-          </div>
+            </div>
             
             <!-- Right Sidebar -->
-    <div class="col-lg-3">
-        <h5>Events</h5>
-        <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>Event Title</span>
-                        <a href="#">See All</a>
-                    </li>
-                </ul>
-    </div>
+   
 
 
-    </div>
     </div>
 
     <div class="pagination">

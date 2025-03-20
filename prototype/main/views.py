@@ -460,7 +460,7 @@ def favorite(request):
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
         favorite = FavoritedProducts.objects.filter(userid=request.user.id)
            # Paginate results
-        paginator = Paginator(favorite, 3)
+        paginator = Paginator(favorite, 8)
         page = request.GET.get('page')
         favoriteList = paginator.get_page(page)
     if user_profile:
