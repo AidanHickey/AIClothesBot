@@ -10,22 +10,16 @@ body {
 }
 
 .navbar, nav {
-    height: 100px; 
-    background-color: #87CEEB !important; 
+    height: 100px;
+    background-color: #87CEEB !important;
     display: flex;
-    align-items: center; 
+    align-items: center;
     padding: 0 5%;
 }
 
 .logo {
-    width: 100px;
-    margin-right: 20px;
-    margin-top: 40px;
-}
-
-
-.logo {
-    width: 300px; 
+    margin-top: 10px;
+    width: 250px;
     margin-right: 10px;
 }
 
@@ -46,7 +40,6 @@ body {
     border-radius: 50% !important;
 }
 
-
 .container .row > div {
     padding: 15px;
 }
@@ -63,31 +56,19 @@ body {
 
 .container {
     padding-left: 0 !important;
-    max-width: 100% !important; 
+    max-width: 100% !important;
 }
-
 
 .left-sidebar {
     margin-left: 0;
-    padding-left: 0; 
-    width: 100%; 
+    padding-left: 0;
+    width: 100%;
 }
 
 .imp-links, .shortcut-links {
-    padding-left: 15px; 
+    padding-left: 15px;
 }
-.card {
-    margin: px 0;
-    text-align: center;
-}
-.card-title {
-    font-size: 1.2em;
-    color: #333;
-}
-.card-text {
-    font-size: 0.9em;
-    color: #666;
-}
+
 .card {
     width: 400px;
     height: 400px;
@@ -102,21 +83,21 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Aligns content to the top */
-    padding-top: 10px; /* Optional: Adds some padding at the top */
+    justify-content: flex-start;
+    padding-top: 10px;
     width: 100%;
     height: 100%;
 }
-/* Modal styling */
+
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
-    z-index: 100; /* Sit on top */
+    z-index: 100;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
 }
@@ -149,21 +130,19 @@ body {
     font-size: 1em;
     color: #333;
 }
+
 .checked {
     color: orange;
-  }
-  .dropbtn {
-   
+}
+
+.dropbtn {
     border: none;
     cursor: pointer;
-  }
-  
-  /* Dropdown button on hover & focus */
-  .dropbtn:hover, .dropbtn:focus {
+}
+
+.dropbtn:hover, .dropbtn:focus {
     background-color: #2980B9;
-  }
-
-
+}
 
 .dropdown {
     position: relative;
@@ -177,25 +156,26 @@ body {
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-  }
+}
 
-  .dropdown-content a {
+.dropdown-content a {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-    border-style:solid;
-  }
+    border-style: solid;
+}
 
-  .dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content {
     display: block;
-  }
+}
 
-.show {display:block;}
+.show {
+    display: block;
+}
 
-
-.room-member {      
-        background-color:#fff;
+.room-member {
+    background-color: #fff;
 }
 
 .notification {
@@ -206,4 +186,91 @@ body {
     border-radius: 50%;
     background: red;
     color: white;
-  }
+}
+
+.filter-form {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.filter-form select,
+.filter-form input,
+.filter-form button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.filter-form label {
+    font-weight: bold;
+}
+
+.filter-btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-btn-container button {
+    width: auto;
+    margin-top: 10px;
+}
+
+.input-group {
+    max-width: 100%;
+    margin-bottom: 10px;
+}
+
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-section > div {
+    flex: 1 1 30%;
+}
+
+@media (max-width: 768px) {
+    .filter-section > div {
+        flex: 1 1 100%;
+    }
+
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .filter-form {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar {
+        padding: 0 10px;
+    }
+
+    .filter-form select,
+    .filter-form input,
+    .filter-form button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .logo {
+        margin-top: 10px;
+        width: 200px;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+
