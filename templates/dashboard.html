@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wardrobe Wise</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'script.js' %}"></script>
+
+
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <div class="container">
+            <!-- f Section -->
+            <a class="navbar-brand d-flex align-items-center" href="">
+                <img src="{% static 'wardrobewise_logo.png' %}" class="logo" alt="Wardrobe Wise Logo">
+            </a>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav ml-auto d-flex align-items-center">
+                <div class ="dropbtn">
+                <a href="{% url 'main:upload' %}" class="nav-link text-white mr-3">
+                    <i class="fas fa-upload"></i> Upload Post
+                </a>
+                </div>
+                {% if user.is_authenticated %}
+                {% csrf_token %}
+                <div class="dropdown" id="notification"> 
+                <div class ="dropbtn">
+                <a class="nav-link text-white mr-3">
+                    <i class="fas fa-bell"><div class="notification" id="notifCount">{{notification_count}}</div> </i> Notification 
+                </a>
+                </div>
+                <div class ="dropdown-content">
+                    {% for notif in notification %}
+                    <a href="{{notif.link}}">{{notif.content}}</a>    
+                    {% endfor %}
+                </div>
+                </div>
+                
+                {% else %}
+                <div class ="dropbtn">
+                    <a  href="{% url 'main:signin' %}" class="nav-link text-white mr-3">
+                        <i class="fas fa-bell"></i>Notification
+                    </a>
+                </div>
+                {% endif %} 
+                <div class ="dropbtn">         
+                    {% if user.is_authenticated %}
+                        <a  href="{% url 'main:message' %}" class="nav-link text-white mr-3">
+                            <i class="fas fa-envelope"></i>Inbox
+                        </a>
+                {% else %}
+                <a  href="{% url 'main:signin' %}"class="nav-link text-white mr-3">
+                    <i class="fas fa-envelope"></i>Inbox
+                </a>
+                {% endif %} 
+                </div>
+                </div>
+                <form method="GET" action={%url "main:search" %}
+                <div class="input-group mr-3">
+                    <input type="text" class="form-control" name="query" placeholder="Search" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                </form>
+
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if user_profile and user_profile.profileimg %}
+                            <img src="{{ user_profile.profileimg.url }}" class="rounded-circle nav-user-icon" alt="User Profile Icon" width="40px" height="40px">
+                        {% else %}
+                            <img src="media/userimg/guestprofilepic.png" class="rounded-circle nav-user-icon" alt="Guest Profile Icon" width="40px" height="40px">
+                        {% endif %}
+                                                           
+                    </a>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{% url 'main:settings' %}">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+    </nav>
+
+    <!-- Main Content -->
+       
+    <div class="container">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-lg-3">
+                <h5>Quick Links</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <button onclick="location.href='favorite'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-user-friends"></i> Favorited Products
+                        </button>
+                    </li>
+                    <li class="list-group-item">
+                        <button onclick="location.href='friend'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-user-friends"></i> Friends
+                        </button>
+                    </li>
+                    <li class="list-group-item">
+                        <button onclick="location.href='marketplace'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-store"></i> Marketplace
+                        </button>
+                    </li>
+                </ul>
+                <h5 class="mt-4">Your Shortcuts</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-code"></i> Outfit Oriented Programmers</li>
+                    <li class="list-group-item"><i class="fas fa-laptop-code"></i> Development</li>
+                </ul>
+            </div>
+
+    
+            <!-- Feed Section -->
+             
+            <div class="col-lg-6">
+                {% if posts_following%}
+                    <h2 align="center"> Posts from people you follow </h2>
+                {%endif%}
+                    {% for p in posts_following reversed %}
+                <div class="card" style="height: auto">
+                    <!-- User Info and Post Text -->
+                  
+                    <div class="card-header d-flex align-items-center" style="width:100%">
+                        <img src="{{ p.userid.profileimg.url }}" width="20px" height="20px" />
+            
+                        <p class="m-0" margin-left="20px"><a href="/profile/{{p.userid.userid}}"><strong> {{p.userid.username}}</strong></a></p>
+                    </div>
+                    <div class="card-body">
+                    <p class="m-0">{{p.content}}</p>
+                </div>
+            
+
+                
+                    <!-- Post Image -->
+                    <div class="card-body">
+                        {% if p.image %}
+                   <img 
+                        class="card-img-top" 
+                        src="{{ p.image.url }}" 
+                        alt="Card image cap" 
+                        style="object-fit: cover;"> 
+                        {% else %}
+                        <img 
+                        class="card-img-top" 
+                        src="{% static 'feed_img.png' %}" 
+                        alt="Default Image" 
+                        style="object-fit: cover;">
+                         {% endif %}
+                    </div>
+                    <!-- Buttons -->
+                    <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                        {% if p.postid in liked_posts %}
+                        <button class="btn btn-sm btn-outline-primary mx-2" onclick="likeEvent(`{{p.postid}}`)" id="likeBtn{{p.postid}}" >  <i class="fas fa-thumbs-up"></i> Liked </a>
+                        {% else %}
+                        <button class="btn btn-sm btn-outline-primary mx-2" onclick="likeEvent(`{{p.postid}}`)" id="likeBtn{{p.postid}}" >  <i class="fas fa-thumbs-up"></i> Like </a>
+                        {% endif %}
+                            <button class="btn btn-sm btn-outline-secondary mx-2">
+                                <i class="fas fa-comment"></i> Comment
+                            </button>
+                            <button class="btn btn-sm btn-outline-success mx-2">
+                                <i class="fas fa-share"></i> Share
+                            </button>
+                    </div>
+                    <br>
+                    <div>
+                        <p id="likeNumber{{p.postid}}">
+                        {% if p.likedposts_set.count == 0 %}
+                        No likes yet
+                    {% elif p.likedposts_set.count == 1 %}
+                        Liked by 1 person
+                    {% elif p.likedposts_set.count > 1 %}
+                        Liked by {{ p.likedposts_set.count }} people
+                    {% endif %}
+                    </p>
+                    </div>
+                </div>
+            
+                   
+                </div>
+                {% endfor %}
+                <h2 align="center"> Posts from other people </h2>
+                {% for p in other_posts reversed %}
+                <div class="card" style="height: auto">
+                    <!-- User Info and Post Text -->
+                  
+                    <div class="card-header d-flex align-items-center" style="width:100%">
+                        <img src="{{ p.userid.profileimg.url }}" width="20px" height="20px" />
+            
+                        <p class="m-0" margin-left="20px"><a href="/profile/{{p.userid.userid}}"><strong> {{p.userid.username}}</strong></a></p>
+                    </div>
+                    <div class="card-body">
+                    <p class="m-0">{{p.content}}</p>
+                </div>
+                    <!-- Post Image -->
+                    <div class="card-body">
+                        {% if p.image %}
+                   <img 
+                        class="card-img-top" 
+                        src="{{ p.image.url }}" 
+                        alt="Card image cap" 
+                        style="object-fit: cover;"> 
+                        {% else %}
+                        <img 
+                        class="card-img-top" 
+                        src="{% static 'feed_img.png' %}" 
+                        alt="Default Image" 
+                        style="object-fit: cover;">
+                         {% endif %}
+                    </div>
+                    <!-- Buttons -->
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            {% if p.postid in liked_posts %}
+                            <button class="btn btn-sm btn-outline-primary mx-2" onclick="likeEvent(`{{p.postid}}`)" id="likeBtn{{p.postid}}" >  
+                                <i class="fas fa-thumbs-up"></i> Liked 
+                            </button>
+                            {% else %}
+                            <button class="btn btn-sm btn-outline-primary mx-2" onclick="likeEvent(`{{p.postid}}`)" id="likeBtn{{p.postid}}" >  
+                                <i class="fas fa-thumbs-up"></i> Like 
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-sm btn-outline-secondary mx-2" onclick="toggleCommentBox(`{{p.postid}}`)">
+                                <i class="fas fa-comment"></i> Comment
+                            </button>
+                            <button class="btn btn-sm btn-outline-success mx-2">
+                                <i class="fas fa-share"></i> Share
+                            </button>
+                        </div>
+                        <br>
+                        <div>
+                            <p id="likeNumber{{p.postid}}">
+                                {% if p.likedposts_set.count == 0 %}
+                                No likes yet
+                                {% elif p.likedposts_set.count == 1 %}
+                                Liked by 1 person
+                                {% elif p.likedposts_set.count > 1 %}
+                                Liked by {{ p.likedposts_set.count }} people
+                                {% endif %}
+                            </p>
+                        </div>
+                            <!-- Hidden Comment Box -->
+                            <div id="commentBox{{p.postid}}" class="comment-box" style="display: none;">
+                                <textarea id="commentInput{{p.postid}}" class="form-control" placeholder="Write a comment..."></textarea>
+                                <button class="btn btn-primary mt-2" onclick="postComment(`{{p.postid}}`)">Post</button>
+
+                                <!-- Existing Comments -->
+                                <div id="commentsContainer{{ p.postid }}" class="mt-3">
+                                    {% for comment in p.comments_set.all %}
+                                        <div class="comment">
+                                            <strong>{{ comment.userid.username }}</strong>: {{ comment.content }}
+                                             <!-- Reply Button -->
+                                    <button class="btn btn-sm btn-link reply-button" onclick="toggleReplyBox(`{{ comment.commentid }}`)">
+                                        Reply
+                                    </button>
+
+                                    <!-- Hidden Reply Input Box -->
+                                    <div id="replyBox{{ comment.commentid }}" class="reply-box" style="display: none; margin-left: 20px;">
+                                        <textarea id="replyInput{{ comment.commentid }}" class="form-control" placeholder="Write a reply..."></textarea>
+                                        <button class="btn btn-primary mt-2" onclick="postReply(`{{ comment.commentid }}`, `{{ p.postid }}`)">
+                                            Post Reply
+                                        </button>
+                                    </div>
+
+                                    <!-- Display Replies -->
+                                    <div class="replies-container" id="repliesContainer{{ comment.commentid }}" style="margin-left: 40px;">
+                                        {% for reply in comment.comments_set.all %}
+                                            <div class="reply">
+                                                <strong>{{ reply.userid.username }}</strong>: {{ reply.content }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                        </div>
+                                    {% empty %}
+                                        <p></p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+
+
+                </div>
+                {% endfor %}
+        </div> <!-- Closing .row -->
+    </div> 
+
+
+
+
+        </div>
+        <div class="pagination"> 
+            <span class="step-links">
+                {% if posts.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ posts.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+                </span>
+        
+                {% if products.has_next %}
+                    <a href="?page={{ posts.next_page_number }}">next</a>
+                    <a href="?page={{ posts.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div> 
+    </div>
+
+
+    <!-- Bootstrap JS -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
