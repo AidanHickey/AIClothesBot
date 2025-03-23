@@ -66,14 +66,17 @@
                     </a>
                     {% endif %} 
                     </div>
-                    </div>
+                </div>
+                <form method="GET" action={%url "main:search" %}
                 <div class="input-group mr-3">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" class="form-control" name="query" placeholder="Search" required>
                     <div class="input-group-append">
-                        <button class="btn btn-secondary" type="button">
+                        <button class="btn btn-secondary" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
+                </div>
+                </form>
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {% if user_profile and user_profile.profileimg %}
