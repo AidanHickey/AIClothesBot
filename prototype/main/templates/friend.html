@@ -66,14 +66,17 @@
                     </a>
                     {% endif %} 
                     </div>
-                    </div>
+                </div>
+                <form method="GET" action={%url "main:search" %}
                 <div class="input-group mr-3">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" class="form-control" name="query" placeholder="Search" required>
                     <div class="input-group-append">
-                        <button class="btn btn-secondary" type="button">
+                        <button class="btn btn-secondary" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
+                </div>
+                </form>
                     <div class="dropdown">
                         <a href="#" class="dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {% if user_profile and user_profile.profileimg %}
@@ -99,11 +102,7 @@
             <div class="col-lg-3">
                 <h5>Quick Links</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <button onclick="location.href='favorite'" class="btn btn-link p-0 text-primary">
-                            <i class="fas fa-user-friends"></i> Favorited Products
-                        </button>
-                    </li>
+                    <li class="list-group-item" ><i class="fas fa-newspaper"></i> Latest News</li>
                     <li class="list-group-item">
                         <button onclick="location.href='friend'" class="btn btn-link p-0 text-primary">
                             <i class="fas fa-user-friends"></i> Friends
@@ -184,7 +183,15 @@
             </div>
             
             <!-- Right Sidebar -->
-   
+    <div class="col-lg-3">
+        <h5>Events</h5>
+        <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Event Title</span>
+                        <a href="#">See All</a>
+                    </li>
+                </ul>
+    </div>
 
 
     </div>
