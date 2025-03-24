@@ -203,12 +203,15 @@
                         <!-- Existing Comments -->
                         <div id="commentsContainer{{ p.postid }}" class="mt-3">
                             {% for comment in p.comments_set.all %}
+                            {% if not comment.parent %}
                                 <div class="comment">
                                     <strong>{{ comment.userid.username }}</strong>: {{ comment.content }}
+                            
                                      <!-- Reply Button -->
                             <button class="btn btn-sm btn-link reply-button" onclick="toggleReplyBox(`{{ comment.commentid }}`)">
                                 Reply
                             </button>
+                            {% endif %}
 
                             <!-- Hidden Reply Input Box -->
                             <div id="replyBox{{ comment.commentid }}" class="reply-box" style="display: none; margin-left: 20px;">
