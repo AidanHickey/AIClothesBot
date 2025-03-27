@@ -1,4 +1,4 @@
-]{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,17 +97,17 @@
         <h5>Quick Links</h5>
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            <button onclick="location.href='favorite'" class="btn btn-link p-0 text-primary">
+            <button onclick="location.href='../favorite'" class="btn btn-link p-0 text-primary">
               <i class="fas fa-heart"></i> Favorited Products
             </button>
           </li>
           <li class="list-group-item">
-            <button onclick="location.href='friend'" class="btn btn-link p-0 text-primary">
+            <button onclick="location.href='../friend'" class="btn btn-link p-0 text-primary">
               <i class="fas fa-user-friends"></i> Friends
             </button>
           </li>
           <li class="list-group-item">
-            <button onclick="location.href='marketplace'" class="btn btn-link p-0 text-primary">
+            <button onclick="location.href='../marketplace'" class="btn btn-link p-0 text-primary">
               <i class="fas fa-store"></i> Marketplace
             </button>
           </li>
@@ -209,6 +209,7 @@
         </div>
         
         <!-- User Posts Section -->
+        <h2 align="center"> Their Posts </h2>
         {% for post in user_posts %}
 <div class="card mb-4" style="height: auto;">
   <!-- Card Header: User Info -->

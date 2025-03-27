@@ -376,7 +376,9 @@ def profile(request, userid):
             current_user = Users.objects.get(userid=request.user.id)
         except Users.DoesNotExist:
             current_user = None 
-    user_posts = Posts.objects.filter(userid=userid)
+
+    
+    user_posts = Posts.objects.select_related('userid').prefetch_related('comments_set__userid').prefetch_related('likedposts_set').filter(userid=userid)
     user_posts_length=user_posts.count()
     
     user_followers=Followers.objects.filter(touser=user_profile).count()
@@ -398,7 +400,14 @@ def profile(request, userid):
         "user_followers":user_followers,
         "user_following":user_following,
         "friend_button_text":friend_button_text,
-    }
+        }
+    if current_user:
+        notification = Notifications.objects.filter(userid=request.user.id)
+        notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
+        info['notification'] = notification
+        info['notification_count'] = notification_count
+        
+    
     return render(request, "profile.html", info)
 
     
