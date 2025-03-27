@@ -186,13 +186,15 @@
                     <br>
                     <div>
                         <p id="likeNumber{{p.postid}}">
-                        {% if p.likedposts_set.count == 0 %}
-                        No likes yet
-                    {% elif p.likedposts_set.count == 1 %}
-                        Liked by 1 person
-                    {% elif p.likedposts_set.count > 1 %}
-                        Liked by {{ p.likedposts_set.count }} people
-                    {% endif %}
+                            {% with count=p.likedposts_set.count %}
+                            {% if count == 1 %}
+                            Liked by 1 person
+                            {% elif count > 1 %}
+                            Liked by {{ count }} people
+                            {% else %}
+                            No likes yet
+                            {% endif %}
+                            {% endwith %}
                     </p>
                     </div>
                      <!-- Hidden Comment Box -->
@@ -297,13 +299,15 @@
                         <br>
                         <div>
                             <p id="likeNumber{{p.postid}}">
-                                {% if p.likedposts_set.count == 0 %}
-                                No likes yet
-                                {% elif p.likedposts_set.count == 1 %}
-                                Liked by 1 person
-                                {% elif p.likedposts_set.count > 1 %}
-                                Liked by {{ p.likedposts_set.count }} people
+                                {% with count=p.likedposts_set.count %}
+                                {% if count == 1 %}
+                                    Liked by 1 person
+                                {% elif count > 1 %}
+                                    Liked by {{ count }} people
+                                {% else %}
+                                    No likes yet
                                 {% endif %}
+                                {% endwith %}
                             </p>
                         </div>
                             <!-- Hidden Comment Box -->
@@ -404,13 +408,15 @@
             <br>
             <div>
                 <p id="likeNumber{{p.postid}}">
-                {% if p.likedposts_set.count == 0 %}
-                No likes yet
-            {% elif p.likedposts_set.count == 1 %}
+            {% with count=p.likedposts_set.count %}
+            {% if count == 1 %}
                 Liked by 1 person
-            {% elif p.likedposts_set.count > 1 %}
-                Liked by {{ p.likedposts_set.count }} people
+            {% elif count > 1 %}
+                Liked by {{ count }} people
+            {% else %}
+                No likes yet
             {% endif %}
+            {% endwith %}
             </p>
             </div>
              <!-- Hidden Comment Box -->

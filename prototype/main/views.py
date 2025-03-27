@@ -23,20 +23,16 @@ def index(request):
         user_profile = Users.objects.get(username=request.user.username)
     
 
-    if user_profile:
+    if user_profile!=None:
         notification = Notifications.objects.filter(userid=request.user.id)
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
-        liked_posts = Likedposts.objects.filter(userid=request.user.id).values_list('postid', flat=True)
-        user_following = Followers.objects.filter(fromuser=user_profile).values_list('touser', flat=True)
-        feed_list_following = Posts.objects.filter(userid__in=user_following)
-        other_posts = Posts.objects.exclude(userid__in=user_following).exclude(userid=user_profile)
-        elapsed = done - start
-        print(elapsed)
+        liked_posts = Likedposts.objects.select_related('userid','postid').filter(userid=request.user.id).values_list('postid', flat=True)
+        user_following = Followers.objects.select_related('userid').filter(fromuser=user_profile).values_list('touser', flat=True)
+        feed_list_following = Posts.objects.select_related('userid').prefetch_related('comments_set__userid').filter(userid__in=user_following)
+        other_posts = Posts.objects.select_related('userid').prefetch_related('comments_set__userid').exclude(userid__in=user_following).exclude(userid=user_profile)
         return render(request, 'dashboard.html', {'posts_following':feed_list_following, "other_posts":other_posts, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count, 'liked_posts':liked_posts})
     else:
-        feed_list=Posts.objects.all()
-        elapsed = done - start
-        print(elapsed)
+        feed_list=Posts.objects.select_related('userid').prefetch_related('comments_set__userid').all()
         return render(request, 'dashboard.html', {'posts':feed_list,'liked_posts':{}})
     
 
