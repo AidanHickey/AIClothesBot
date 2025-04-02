@@ -439,31 +439,61 @@ def follow(request):
     
 def create_friend(request):
     if request.method == "POST":
-        new_friend = Friends.objects.filter( Q(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser']) | Q(userone_id=request.POST['touser'],usertwo_id=request.POST['fromuser'])).first()
-        if not new_friend:
-            room = Friends(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser'])
-            room.save()
-            responseBtn = "Unfriend"
-        else:
-            new_friend.delete()
-            responseBtn = "Friend"
-    return HttpResponse(responseBtn)
+        if request.POST['command']=='reject':
+            reject = Friends.objects.filter(userone_id=request.POST['touser'],usertwo_id=request.POST['fromuser'])
+            reject.delete()
+            return HttpResponse()
+        
+        if request.POST['command']=='accept':
+            accept = Friends.objects.create(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser'])
+            accept.save()
+            return HttpResponse()
+        
+        if request.POST['command']=='unfriend':
+            friendship = Friends.objects.filter(Q(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser']) | Q(userone_id=request.POST['touser'],usertwo_id=request.POST['fromuser']))
+            print(friendship)
+            friendship.delete() # rip bozo
+            return HttpResponse()
+        
+
+    return HttpResponse(status=400)
 
 def friend(request):
     user_profile=None
     if request.user.is_authenticated:
         user_profile = Users.objects.get(username=request.user.username)
+       
+    if user_profile:
         notification = Notifications.objects.filter(userid=request.user.id)
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
-        friendList = Friends.objects.filter(Q(userone_id=request.user.id) | Q(userone_id=request.user.id))
-    if user_profile:
-        return render(request, 'friend.html', {'friendList':friendList, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count}) 
+        friendList = Friends.objects.filter(Q(userone_id=request.user.id) | Q(usertwo_id=request.user.id))
+        friendIds = dict()
+        for f in friendList:
+            if (f.userone.userid==request.user.id and f.usertwo.userid not in list(friendIds.keys())):
+                 friendIds[f.usertwo.userid]=1
+            elif (f.userone.userid==request.user.id):
+                friendIds[f.usertwo.userid]+=1
+            elif (f.usertwo.userid==request.user.id and f.userone.userid not in list(friendIds.keys())):
+                friendIds[f.userone.userid]=1
+            elif (f.usertwo.userid==request.user.id):
+                friendIds[f.userone.userid]+=1
+        actualFriends = list()
+        justRequests = list()
+        for f in friendIds:
+            if (friendIds[f]>1):
+                actualFriends.append(f)
+            if (friendIds[f]==1):
+                justRequests.append(f)
+        actualFriendList = Friends.objects.filter(Q(userone_id__in = actualFriends))
+        justRequestList = Friends.objects.filter(Q(userone_id__in = justRequests) & Q(usertwo=user_profile))
+        return render(request, 'friend.html', {'friendList':actualFriendList, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count,'justRequestList':justRequestList}) 
     return render(request, 'signin.html')
 
 def favorite(request):
     user_profile=None
     if request.user.is_authenticated:
         user_profile = Users.objects.get(username=request.user.username)
+    if user_profile:
         notification = Notifications.objects.filter(userid=request.user.id)
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
         favorite = FavoritedProducts.objects.filter(userid=request.user.id)
@@ -471,7 +501,6 @@ def favorite(request):
         paginator = Paginator(favorite, 8)
         page = request.GET.get('page')
         favoriteList = paginator.get_page(page)
-    if user_profile:
         return render(request, 'favorite.html', {'favoriteList':favoriteList, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count}) 
     return render(request, 'signin.html')
     
