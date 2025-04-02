@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'script.js' %}"></script>
+    <script>
+        var static_url = "{% get_static_prefix %}";
+        var media_url = "{% get_media_prefix %}";
+        var get_message_url = "{% url 'main:message' %}";
+    </script>
 </head>
 <body>
    
@@ -24,9 +29,27 @@
                 <a href="{% url 'main:upload' %}" class="nav-link text-white mr-3">
                     <i class="fas fa-upload"></i> Upload Post
                 </a>
-                <a href="#" class="nav-link text-white mr-3">
-                    <i class="fas fa-bell"></i> Notification
-                </a>
+                {% if user.is_authenticated %}
+                    <div class="dropdown" id="notification">
+                    <div class ="dropbtn">
+                    <a class="nav-link text-white mr-3">
+                        <i class="fas fa-bell"><div class="notification" id="notifCount">{{notification_count}}</div> </i> Notification 
+                    </a>
+                    </div>
+                    <div class ="dropdown-content">
+                        {% for notif in notification %}
+                        <a href="{{notif.link}}">{{notif.content}}</a>    
+                        {% endfor %}
+                    </div>
+                    </div>
+                    
+                    {% else %}
+                    <div class ="dropbtn">
+                        <a  href="{% url 'main:signin' %}" class="nav-link text-white mr-3">
+                            <i class="fas fa-bell"></i>Notification
+                        </a>
+                    </div>
+                    {% endif %} 
                 <div class="dropdown">
                     {% if user.is_authenticated %}
                     <div class="dropbtn" onclick="inboxDropdown(`{{user.id}}`);"> 
@@ -81,14 +104,21 @@
             <div class="col-lg-3">
                 <h5>Quick Links</h5>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><i class="fas fa-newspaper"></i> Latest News</li>
-                    <li class="list-group-item"><i class="fas fa-user-friends"></i> Friends</li>
+                    <li class="list-group-item">
+                        <button onclick="location.href='favorite'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-user-friends"></i> Favorited Products
+                        </button>
+                    </li>
+                    <li class="list-group-item">
+                        <button onclick="location.href='friend'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-user-friends"></i> Friends
+                        </button>
+                    </li>
                     <li class="list-group-item">
                         <button onclick="location.href='marketplace'" class="btn btn-link p-0 text-primary">
                             <i class="fas fa-store"></i> Marketplace
                         </button>
                     </li>
-                    <li class="list-group-item"><a href="#">See More</a></li>
                 </ul>
                 <h5 class="mt-4">Your Shortcuts</h5>
                 <ul class="list-group list-group-flush">
@@ -138,15 +168,7 @@
 
 
             <!-- Right Sidebar -->
-            <div class="col-lg-3">
-                <h5>Events</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>Event Title</span>
-                        <a href="#">See All</a>
-                    </li>
-                </ul>
-            </div>
+           
         </div>
     </div>
 

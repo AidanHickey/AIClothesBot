@@ -128,6 +128,7 @@
             <!-- Friend and Requests Section -->
             <div class="col-lg-6">
                 <!-- Request Section -->
+                {% if justRequestList.count > 0 %}
                 <h5>Friend Requests</h5>
                 <ul class="list-group list-group-flush" style="height:auto ; overflow-x: auto;padding-bottom:10%;">
                 {% for friend in justRequestList %}
@@ -161,6 +162,7 @@
                 </li>
                 {% endfor %}
                 </ul>
+                {% endif %}
                 <!-- Friend Section -->
                 <h5>Friends</h5>
                 <ul class="list-group list-group-flush" style="height: 400px ; overflow-x: auto">

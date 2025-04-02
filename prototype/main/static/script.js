@@ -160,6 +160,7 @@ function likeEvent(postid) {
         acceptBtn.disabled = "true";
         rejectBtn.disabled = "true";
         acceptBtn.innerHTML = "Accepted!"
+        location.reload(true)
 
         },
         error: function(response) {
@@ -211,6 +212,56 @@ $(document).ready(function () {
           var friend = document.getElementById(`friendLi${formData.get('touser')}`);
           friend.style.display = "none";
 
+      },
+      error: function(response) {
+      },
+      cache: false,
+      contentType: false,
+      processData: false
+    
+  })
+})
+})
+
+$(document).ready(function () {
+  $('.friendForm').submit(function(e){
+  e.preventDefault();
+  var formData = new FormData(this);
+  var command = formData.get('command');
+  if (command == "Unfriend")
+    formData.set("command","unfriend");
+  else if (command == "Remove Friend Request")
+    formData.set("command","remove");
+  else if (command == "Accept Friend Request")
+    formData.set("command","accept");
+  else 
+    formData.set("command","send")
+
+  $.ajax({
+      type:"POST",
+      url: `../create_friend`,
+      data: formData, 
+      success: function(response){
+        console.log(response)
+        var buttonText = document.getElementById("friendBtn");
+         if (formData.get('command')=="unfriend")
+         {
+            buttonText.style.backgroundColor="#71e293";
+         }
+         else if (formData.get('command')=="accept")
+        {
+            buttonText.style.backgroundColor="rgb(238, 54, 30)";
+        }
+         var input = document.getElementById("command");
+         input.value = response["friend_button_text"];
+         buttonText.innerHTML = response["friend_button_text"];
+         if (response["friend_count"]!=undefined)
+        {
+          var friend_count = document.getElementById("friendCount");
+          if (response["friend_count"]>1)
+           friend_count.innerHTML = response["friend_count"] + " Friends"
+          else friend_count.innerHTML = response["friend_count"] + " Friend"
+        }
       },
       error: function(response) {
       },

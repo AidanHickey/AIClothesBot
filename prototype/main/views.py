@@ -24,7 +24,7 @@ def index(request):
     
 
     if user_profile!=None:
-        notification = Notifications.objects.filter(userid=request.user.id)
+        notification = Notifications.objects.filter(userid=request.user.id).order_by('-notifid')
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
         liked_posts = Likedposts.objects.select_related('userid','postid').filter(userid=request.user.id).values_list('postid', flat=True)
         user_following = Followers.objects.select_related('userid').filter(fromuser=user_profile).values_list('touser', flat=True)
@@ -104,7 +104,7 @@ def message(request):
         user_profile = Users.objects.get(username=request.user.username)
         rooms = ChatRooms.objects.filter(Q(userone=request.user.id) | Q(usertwo=request.user.id))
         users = Users.objects.exclude(userid = user_profile.userid)
-        notification = Notifications.objects.filter(userid=request.user.id)
+        notification = Notifications.objects.filter(userid=request.user.id).order_by('-notifid')
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
 
     if user_profile:
@@ -215,7 +215,7 @@ def marketplace(request):
     notification_count = 0
     if request.user.is_authenticated:
         user_profile = Users.objects.get(username=request.user.username)
-        notification = Notifications.objects.filter(userid=request.user.id)
+        notification = Notifications.objects.filter(userid=request.user.id).order_by('-notifid')
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
     if user_profile:
         return render(request, 'marketplace.html', {
@@ -313,6 +313,8 @@ def logout(request):
 @login_required(login_url='main:signin')
 def settings(request):
     user_profile = Users.objects.get(username=request.user.username)
+    notification = Notifications.objects.filter(userid=request.user.id).order_by('-notifid')
+    notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
     if request.method=="POST":
         email=request.POST["email"]
         biography=request.POST["biography"]
@@ -325,7 +327,7 @@ def settings(request):
             
         user_profile.save()
         return redirect('main:index')
-    return render(request, "settings.html", {"user_profile": user_profile})
+    return render(request, "settings.html", {"user_profile": user_profile, "notification":notification,"notification_count":notification_count})
 
 @login_required(login_url='main:signin')
 def upload(request):
@@ -363,6 +365,26 @@ def like_post(request, postid):
     response = {'status':status, 'count':count }
     return JsonResponse(response)
 
+def friendCount(userid):
+    count = 0
+    friendList = Friends.objects.filter(Q(userone_id=userid) | Q(usertwo_id=userid))
+    friendIds = dict()
+    for f in friendList:
+            if (f.userone.userid==userid and f.usertwo.userid not in list(friendIds.keys())):
+                 friendIds[f.usertwo.userid]=1
+            elif (f.userone.userid==userid):
+                friendIds[f.usertwo.userid]+=1
+            elif (f.usertwo.userid==userid and f.userone.userid not in list(friendIds.keys())):
+                friendIds[f.userone.userid]=1
+            elif (f.usertwo.userid==userid):
+                friendIds[f.userone.userid]+=1
+    actualFriends = list()
+    for f in friendIds:
+            if (friendIds[f]>1):
+                actualFriends.append(f)
+    count = Friends.objects.filter(Q(userone_id__in = actualFriends,usertwo_id = userid)).count()
+    return count
+
 def profile(request, userid):
     try:
         user_profile = Users.objects.get(userid=userid)
@@ -383,14 +405,21 @@ def profile(request, userid):
     
     user_followers=Followers.objects.filter(touser=user_profile).count()
     user_following=Followers.objects.filter(fromuser=user_profile).count()
+    # friend count part
+    friend_count = friendCount(userid)
+    # end friend count
     if Followers.objects.filter(fromuser=current_user, touser=user_profile).first():
         button_text="Unfollow"
     else:
         button_text="Follow"
-    if Friends.objects.filter( Q(userone_id=current_user,usertwo_id=user_profile) | Q(userone_id=user_profile,usertwo_id=current_user)).first():
+    if Friends.objects.filter(Q(userone_id=current_user,usertwo_id=user_profile) | Q(userone_id=user_profile,usertwo_id=current_user)).count()>1: # if they are friends
         friend_button_text="Unfriend"
+    elif Friends.objects.filter(userone_id=current_user,usertwo_id=user_profile).first(): #if you sent a friend request to them but they haven't accepted
+        friend_button_text="Remove Friend Request"
+    elif Friends.objects.filter(userone_id=user_profile,usertwo_id=current_user).first(): #if they sent a friend request to you but you haven't accepted
+        friend_button_text="Accept Friend Request"
     else:
-        friend_button_text="Friend"
+        friend_button_text="Send Friend Request"
     info={
         "user_profile": user_profile,
         "user_posts":user_posts,
@@ -400,9 +429,10 @@ def profile(request, userid):
         "user_followers":user_followers,
         "user_following":user_following,
         "friend_button_text":friend_button_text,
+        "friend_count":friend_count
         }
     if current_user:
-        notification = Notifications.objects.filter(userid=request.user.id)
+        notification = Notifications.objects.filter(userid=request.user.id).order_by('-notifid')
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
         info['notification'] = notification
         info['notification_count'] = notification_count
@@ -439,22 +469,42 @@ def follow(request):
     
 def create_friend(request):
     if request.method == "POST":
+        fromUser = Users.objects.get(userid=request.POST['fromuser'])
+        toUser = Users.objects.get(userid=request.POST['touser'])
         if request.POST['command']=='reject':
             reject = Friends.objects.filter(userone_id=request.POST['touser'],usertwo_id=request.POST['fromuser'])
             reject.delete()
-            return HttpResponse()
+            friend_count = friendCount(request.POST['touser'])
+            return JsonResponse({"friend_button_text":"Send Friend Request","friend_count":friend_count})
         
         if request.POST['command']=='accept':
             accept = Friends.objects.create(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser'])
             accept.save()
-            return HttpResponse()
+            notification = Notifications.objects.create(content=fromUser.username + " accepted your friend request",userid = toUser, link = "/profile/" + str(fromUser.userid))
+            notification.save()
+            friend_count = friendCount(request.POST['touser'])
+            return JsonResponse({"friend_button_text":"Unfriend","friend_count":friend_count})
         
         if request.POST['command']=='unfriend':
             friendship = Friends.objects.filter(Q(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser']) | Q(userone_id=request.POST['touser'],usertwo_id=request.POST['fromuser']))
             print(friendship)
             friendship.delete() # rip bozo
-            return HttpResponse()
+            friend_count = friendCount(request.POST['touser'])
+            return JsonResponse({"friend_button_text":"Send Friend Request","friend_count":friend_count})
         
+        if request.POST['command']=='remove':
+            friendship = Friends.objects.filter(Q(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser']))
+            print(friendship)
+            friendship.delete() # rip bozo
+            return JsonResponse({"friend_button_text":"Send Friend Request"})
+        
+        if request.POST['command']=='send':
+            send = Friends.objects.create(userone_id=request.POST['fromuser'],usertwo_id=request.POST['touser'])
+            send.save()
+            notification = Notifications.objects.create(content=fromUser.username + " sent you a friend request",userid = toUser, link = "/profile/" + str(fromUser.userid))
+            notification.save()
+            return JsonResponse({"friend_button_text":"Remove Friend Request"})
+
 
     return HttpResponse(status=400)
 
@@ -464,7 +514,7 @@ def friend(request):
         user_profile = Users.objects.get(username=request.user.username)
        
     if user_profile:
-        notification = Notifications.objects.filter(userid=request.user.id)
+        notification = Notifications.objects.filter(userid=request.user.id).order_by('-notifid')
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
         friendList = Friends.objects.filter(Q(userone_id=request.user.id) | Q(usertwo_id=request.user.id))
         friendIds = dict()
@@ -489,12 +539,13 @@ def friend(request):
         return render(request, 'friend.html', {'friendList':actualFriendList, 'user_profile': user_profile, 'notification':notification, 'notification_count':notification_count,'justRequestList':justRequestList}) 
     return render(request, 'signin.html')
 
+
 def favorite(request):
     user_profile=None
     if request.user.is_authenticated:
         user_profile = Users.objects.get(username=request.user.username)
     if user_profile:
-        notification = Notifications.objects.filter(userid=request.user.id)
+        notification = Notifications.objects.filter(userid=request.user.id).order_by('-notifid')
         notification_count = Notifications.objects.filter(userid=request.user.id, status__isnull=True).count()
         favorite = FavoritedProducts.objects.filter(userid=request.user.id)
            # Paginate results
