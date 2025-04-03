@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import FavoritedProducts, Friends, Products, Users, Posts, Messages, ChatRooms, Likedposts, Followers,Notifications
 import json
@@ -15,7 +15,7 @@ import datetime
 import time
 from itertools import chain
 from django.views.decorators.csrf import csrf_exempt
-from .models import Comments, Posts
+from .models import Comments, Posts, Likedposts, Likedcomments
 
 def index(request):
     user_profile=None
@@ -544,3 +544,14 @@ def post_reply(request):
         return JsonResponse({"message": "Reply posted successfully!"}, status=201)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+def delete_post(request, postid):
+    post=Posts.objects.get(postid=postid)
+
+    Likedposts.objects.filter(postid=postid).delete()
+    Comments.objects.filter(parent__isnull=False, postid=postid).delete()
+    Comments.objects.filter(postid=postid).delete()
+    
+    
+    post.delete()
+    return redirect("/")

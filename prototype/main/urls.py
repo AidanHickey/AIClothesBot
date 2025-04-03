@@ -31,6 +31,7 @@ urlpatterns = [
     path("favorite", views.favorite, name='favorite'),
     path("post-comment/", views.post_comment, name="post_comment"),
     path("post-reply/", views.post_reply, name="post_reply"),
+    path("delete_post/<int:postid>", views.delete_post, name="delete_post"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
