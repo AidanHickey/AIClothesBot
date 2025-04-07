@@ -1,30 +1,72 @@
 .chat-container {
     display: flex;
     flex-direction: column;
-    background-color:#fff;
+    background-color: #f4f7fc;
     overflow-y: scroll;
-    overflow-x:hidden;
-
-    .me,
-    .you {
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        background-color:#fff;
-        overflow-wrap: break-word;
-    }
-
-    .me {
-        margin-left: auto;
-        border: solid 2px paleturquoise;
-        max-width: 40%;
-        background-color:#fff;
-    }
-    .you {
-        margin-right: auto;
-        border: solid 2px plum;
-        max-width: 40%;
-        background-color:#fff;
-    }
+    overflow-x: hidden;
+    padding: 1rem;
+    max-height: 400px;
 }
+
+.message-content {
+    display: flex;
+    align-items: flex-start;  /* Align images and text horizontally */
+    gap: 10px;  /* Space between the image and the text */
+}
+
+.message-img {
+    width: 40px;  /* Size of the profile image */
+    height: 40px;  /* Size of the profile image */
+    border-radius: 50%;  /* Make it round */
+    object-fit: cover;  /* Ensure the image fits nicely within the circle */
+}
+
+.me,
+.you {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.7rem;
+    border-radius: 12px;
+    background-color: #e0f7fa;
+    color: #333;
+    font-size: 16px;
+    max-width: 70%;
+    overflow-wrap: break-word;
+}
+
+.me {
+    margin-left: auto;
+    border: solid 2px #80deea;
+    background-color: #e0f7fa;
+}
+
+.you {
+    margin-right: auto;
+    border: solid 2px #90caf9;
+    background-color: #f1f8fe;
+}
+
+input[type="text"] {
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px solid #90caf9;
+    width: 100%;
+    margin-top: 1rem;
+    font-size: 16px;
+    color: #333;
+}
+
+button {
+    background-color: #80deea;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #4dd0e1;
+}
+
