@@ -125,27 +125,65 @@
                 </ul>
             </div>
     
-            <!-- Friend Section -->
+            <!-- Friend and Requests Section -->
             <div class="col-lg-6">
+                <!-- Request Section -->
+                {% if justRequestList.count > 0 %}
+                <h5>Friend Requests</h5>
+                <ul class="list-group list-group-flush" style="height:auto ; overflow-x: auto;padding-bottom:10%;">
+                {% for friend in justRequestList %}
+                <li class="list-group-item" >
+                <div style="display: inline;">             
+                <img src="{% get_media_prefix %}{{friend.userone.profileimg}}" class="rounded-circle nav-user-icon" style="float:left"" >
+                <h5 style="float:left; padding-top: 10px; padding-left: 20px"> {{friend.userone.username}} </h5>
+                <form method="POST" class="reject_friend">
+                    {% csrf_token %}
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.userone.userid}}">
+                    <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
+                    <input type="hidden" name ="command" id="command" value="reject">
+                <button id="rejectBtn{{friend.userone.userid}}" type="submit" style="background-color: #ee361e;border: #ee361e; padding: 10px 20px;float: right;" >
+                Reject
+                </button>
+                </form>
+                <form method="POST" class="accept_friend">
+                    {% csrf_token %}
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.userone.userid}}">
+                    <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
+                    <input type="hidden" name ="command" id="command" value="accept">
+                <button id="acceptBtn{{friend.userone.userid}}" type="submit" style="background-color: #71e293;border: #71e293; padding: 10px 20px;float: right;">
+                Accept
+                </button>
+                </form>
+                <button onclick="window.location.href='profile/{{friend.userone.userid}}'" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;float: right;">
+                    Profile
+                </button>
+               
+                </div>
+                </li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                <!-- Friend Section -->
                 <h5>Friends</h5>
                 <ul class="list-group list-group-flush" style="height: 400px ; overflow-x: auto">
                 {% for friend in friendList %}
-                <li class="list-group-item" >
-                <div style="display: inline;">
-                {% if user.id == friend.userone.userid %}              
+                {% if user.id == friend.userone.userid %}       
+                <li class="list-group-item" id ="friendLi{{friend.usertwo.userid}}">
+                <div style="display: inline;">       
                 <img src="{% get_media_prefix %}{{friend.usertwo.profileimg}}" class="rounded-circle nav-user-icon" style="float:left"" >
                 <h5 style="float:left; padding-top: 10px; padding-left: 20px"> {{friend.usertwo.username}} </h5>
-                <form method="POST" id="create_friend">
+                <form method="POST" class="unfriend">
                     {% csrf_token %}
-                    <input type="hidden" name ="touser" id="touser" value = "{{friend.usertwo.userid}}"">
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.usertwo.userid}}">
                     <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
-                <button id="friendBtn" type="submit" style="background-color: #ee361e;border: #ee361e; padding: 10px 20px;float: right;">
+                    <input type="hidden" name ="command" id="command" value="unfriend">
+                <button id="friendBtn{{friend.usertwo.userid}}" type="submit" style="background-color: #ee361e;border: #ee361e; padding: 10px 20px;float: right;">
                 Unfriend
                 </button>
                 </form>
                 <form method="POST" id="create_chat_room">
                     {% csrf_token %}
-                    <input type="hidden" name ="touser" id="touser" value = "{{friend.usertwo.userid}}"">
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.usertwo.userid}}">
                     <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
                 <button type="submit" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;float: right;" >
                 Message
@@ -154,14 +192,20 @@
                 <button onclick="window.location.href='profile/{{friend.usertwo.userid}}'" style="background-color: #71e293;border: #71e293; padding: 10px 20px;float: right;">
                     Profile
                 </button>
+            </div> 
+                </li>
+
                 {% elif user.id == friend.usertwo.userid %}
+                <li class="list-group-item" id ="friendLi{{friend.userone.userid}}">
+                <div style="display: inline;">  
                 <img src="{% get_media_prefix %}{{friend.userone.profileimg}}" class="rounded-circle nav-user-icon" style="float:left"" >
                 <h5 style="float:left; padding-top: 10px; padding-left: 20px"> {{friend.userone.username}} </h5>
-                <form method="POST" id="create_friend">
+                <form method="POST" class="unfriend">
                     {% csrf_token %}
-                    <input type="hidden" name ="touser" id="touser" value = "{{friend.userone.userid}}"">
+                    <input type="hidden" name ="touser" id="touser" value = "{{friend.userone.userid}}">
                     <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
-                <button id="friendBtn" type="submit" style="background-color: #ee361e;border: #ee361e; padding: 10px 20px;float: right;" >
+                    <input type="hidden" name ="command" id="command" value="unfriend">
+                <button id="friendBtn{{friend.userone.userid}}" type="submit" style="background-color: #ee361e;border: #ee361e; padding: 10px 20px;float: right;">
                 Unfriend
                 </button>
                 </form>
@@ -169,18 +213,19 @@
                     {% csrf_token %}
                     <input type="hidden" name ="touser" id="touser" value = "{{friend.userone.userid}}"">
                     <input type="hidden" name ="fromuser" id="fromuser" value="{{user.id}}">
-                <button type="submit" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px;float: right;" >
+                <button type="submit" style="background-color: #b1e271;border: #b1e271; padding: 10px 20px;float: right;" >
                 Message
                 </button>
                 </form>
-                <button onclick="window.location.href='profile/{{friend.userone.userid}}'" style="background-color: #71e293;border: #71e293; padding: 10px 20px; float: right;"></button>
+                <button onclick="window.location.href='profile/{{friend.userone.userid}}'" style="background-color: #71b2e2;border: #71b2e2; padding: 10px 20px; float: right;">
                 Profile
                 </button>
+            </div>
+        </li> 
                 {% endif %}
-               
-                </div>
-                </li>
+                 
                 {% endfor %}
+               
                 </ul>
 
                 

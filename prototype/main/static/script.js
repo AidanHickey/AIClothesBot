@@ -147,7 +147,7 @@ function likeEvent(postid) {
   })
 
   $(document).ready(function () {
-    $('#create_friend').submit(function(e){
+    $('.accept_friend').submit(function(e){
     e.preventDefault();
     var formData = new FormData(this);
     $.ajax({
@@ -155,17 +155,13 @@ function likeEvent(postid) {
         url: `../create_friend`,
         data: formData, 
         success: function(response){
-        var friendBtn = document.getElementById("friendBtn");
-        friendBtn.innerHTML = `${response}`;
-        if (response=="Unfriend")
-        {
-        friendBtn.style.backgroundColor="rgb(238, 54, 30)";
-        friendBtn.style.borderColor ="rgb(238, 54, 30)";
-        }
-        else {
-          friendBtn.style.backgroundColor="rgb(41, 245, 0)";
-          friendBtn.style.borderColor ="rgb(41, 245, 0)";
-        }
+        var acceptBtn = document.getElementById(`acceptBtn${formData.get('touser')}`);
+        var rejectBtn = document.getElementById(`rejectBtn${formData.get('touser')}`);
+        acceptBtn.disabled = "true";
+        rejectBtn.disabled = "true";
+        acceptBtn.innerHTML = "Accepted!"
+        location.reload(true)
+
         },
         error: function(response) {
         },
@@ -175,6 +171,106 @@ function likeEvent(postid) {
       
     })
   })
+})
+
+$(document).ready(function () {
+  $('.reject_friend').submit(function(e){
+  e.preventDefault();
+  var formData = new FormData(this);
+  $.ajax({
+      type:"POST",
+      url: `../create_friend`,
+      data: formData, 
+      success: function(response){
+      var acceptBtn = document.getElementById(`acceptBtn${formData.get('touser')}`);
+      var rejectBtn = document.getElementById(`rejectBtn${formData.get('touser')}`);
+      acceptBtn.disabled = "true";
+      rejectBtn.disabled = "true";
+      rejectBtn.innerHTML = "Rejected!"
+  
+      },
+      error: function(response) {
+      },
+      cache: false,
+      contentType: false,
+      processData: false
+    
+  })
+})
+})
+
+$(document).ready(function () {
+  $('.unfriend').submit(function(e){
+  e.preventDefault();
+  var formData = new FormData(this);
+  $.ajax({
+      type:"POST",
+      url: `../create_friend`,
+      data: formData, 
+      success: function(response){
+
+          var friend = document.getElementById(`friendLi${formData.get('touser')}`);
+          friend.style.display = "none";
+
+      },
+      error: function(response) {
+      },
+      cache: false,
+      contentType: false,
+      processData: false
+    
+  })
+})
+})
+
+$(document).ready(function () {
+  $('.friendForm').submit(function(e){
+  e.preventDefault();
+  var formData = new FormData(this);
+  var command = formData.get('command');
+  if (command == "Unfriend")
+    formData.set("command","unfriend");
+  else if (command == "Remove Friend Request")
+    formData.set("command","remove");
+  else if (command == "Accept Friend Request")
+    formData.set("command","accept");
+  else 
+    formData.set("command","send")
+
+  $.ajax({
+      type:"POST",
+      url: `../create_friend`,
+      data: formData, 
+      success: function(response){
+        console.log(response)
+        var buttonText = document.getElementById("friendBtn");
+         if (formData.get('command')=="unfriend")
+         {
+            buttonText.style.backgroundColor="#71e293";
+         }
+         else if (formData.get('command')=="accept")
+        {
+            buttonText.style.backgroundColor="rgb(238, 54, 30)";
+        }
+         var input = document.getElementById("command");
+         input.value = response["friend_button_text"];
+         buttonText.innerHTML = response["friend_button_text"];
+         if (response["friend_count"]!=undefined)
+        {
+          var friend_count = document.getElementById("friendCount");
+          if (response["friend_count"]>1)
+           friend_count.innerHTML = response["friend_count"] + " Friends"
+          else friend_count.innerHTML = response["friend_count"] + " Friend"
+        }
+      },
+      error: function(response) {
+      },
+      cache: false,
+      contentType: false,
+      processData: false
+    
+  })
+})
 })
 
 
