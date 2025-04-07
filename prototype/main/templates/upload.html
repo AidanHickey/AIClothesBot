@@ -1,65 +1,197 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload Post</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    />
-    <script
-      src="https://kit.fontawesome.com/your-fontawesome-key.js"
-      crossorigin="anonymous"
-    ></script>
-  </head>
-  <body class="bg-dark text-white">
-    <div class="container mt-5">
-      <h2 class="text-center">Upload Your Post</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wardrobe Wise - Upload Post</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script type="text/javascript" src="{% static 'jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'script.js' %}"></script>
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <div class="container">
+            <!-- Logo Section -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'main:index' %}">
+                <img src="{% static 'wardrobewise_logo.png' %}" class="logo" alt="Wardrobe Wise Logo">
+            </a>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav ml-auto d-flex align-items-center">
+                <div class="dropbtn">
+                <a href="{% url 'main:upload' %}" class="nav-link text-white mr-3">
+                    <i class="fas fa-upload"></i> Upload Post
+                </a>
+                </div>
+                {% if user.is_authenticated %}
+                {% csrf_token %}
+                <div class="dropdown" id="notification"> 
+                <div class="dropbtn">
+                <a class="nav-link text-white mr-3">
+                    <i class="fas fa-bell"><div class="notification" id="notifCount">{{notification_count}}</div> </i> Notification 
+                </a>
+                </div>
+                <div class="dropdown-content">
+                    {% for notif in notification %}
+                    <a href="{{notif.link}}">{{notif.content}}</a>    
+                    {% endfor %}
+                </div>
+                </div>
+                
+                {% else %}
+                <div class="dropbtn">
+                    <a href="{% url 'main:signin' %}" class="nav-link text-white mr-3">
+                        <i class="fas fa-bell"></i> Notification
+                    </a>
+                </div>
+                {% endif %} 
+                <div class="dropbtn">         
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'main:message' %}" class="nav-link text-white mr-3">
+                            <i class="fas fa-envelope"></i> Inbox
+                        </a>
+                    {% else %}
+                    <a href="{% url 'main:signin' %}" class="nav-link text-white mr-3">
+                        <i class="fas fa-envelope"></i> Inbox
+                    </a>
+                    {% endif %} 
+                </div>
+                </div>
+                <form method="GET" action="{% url 'main:search' %}">
+                <div class="input-group mr-3">
+                    <input type="text" class="form-control" name="query" placeholder="Search" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                </form>
 
-      <form
-        action="upload"
-        method="POST"
-        enctype="multipart/form-data"
-        class="mt-4"
-      >
-        {% csrf_token %}
-
-        <!-- File Upload -->
-        <div class="mb-3">
-          <label for="postUpload" class="form-label"
-            ><i class="fas fa-file-upload"></i> Choose a File</label
-          >
-          <input
-            type="file"
-            name="uploadedImage"
-            class="form-control"
-            accept="image/*"
-            required
-          />
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      {% if user_profile and user_profile.profileimg %}
+                            <img src="{{ user_profile.profileimg.url }}" class="rounded-circle nav-user-icon" alt="User Profile Icon" width="40px" height="40px">
+                        {% else %}
+                            <img src="media/userimg/guestprofilepic.png" class="rounded-circle nav-user-icon" alt="Guest Profile Icon" width="40px" height="40px">
+                        {% endif %}
+                    </a>
+                    {% if user.is_authenticated %}
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{% url 'main:settings' %}">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+                    </ul>
+                    {% else %}
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{% url 'main:signin' %}">Sign In</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'main:signup' %}">Sign Up</a></li>
+                    </ul>
+                    {% endif %}
+                </div>
         </div>
+    </nav>
 
-        <!-- Caption -->
-        <div class="mb-3">
-          <input
-            type="text"
-            name="content"
-            class="form-control"
-            placeholder="Write a caption..."
-            required
-          />
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-lg-3">
+                <h5>Quick Links</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <button onclick="location.href='favorite'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-user-friends"></i> Favorited Products
+                        </button>
+                    </li>
+                    <li class="list-group-item">
+                        <button onclick="location.href='friend'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-user-friends"></i> Friends
+                        </button>
+                    </li>
+                    <li class="list-group-item">
+                        <button onclick="location.href='marketplace'" class="btn btn-link p-0 text-primary">
+                            <i class="fas fa-store"></i> Marketplace
+                        </button>
+                    </li>
+                </ul>
+                <h5 class="mt-4">Your Shortcuts</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-code"></i> Outfit Oriented Programmers</li>
+                    <li class="list-group-item"><i class="fas fa-laptop-code"></i> Development</li>
+                </ul>
+            </div>
+    
+            <!-- Upload Section -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="text-center mb-0">Upload Your Post</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'main:upload' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- File Upload -->
+                            <div class="form-group">
+                                <label for="postUpload"><i class="fas fa-file-upload"></i> Choose an Image</label>
+                                <input type="file" name="uploadedImage" id="postUpload" class="form-control-file" accept="image/*" required>
+                                <small class="form-text text-muted">Share your latest fashion finds or outfit inspiration!</small>
+                            </div>
+                            
+                            <!-- Preview -->
+                            <div class="form-group text-center" id="imagePreview" style="display: none;">
+                                <img src="#" alt="Image Preview" class="img-fluid rounded">
+                            </div>
+                            
+                            <!-- Caption -->
+                            <div class="form-group">
+                                <label for="captionInput">Caption</label>
+                                <textarea name="content" id="captionInput" class="form-control" rows="3" placeholder="Write a caption..." required></textarea>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fas fa-paper-plane"></i> Post
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="col-lg-3">
+                
+            </div>
         </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary w-100">Post</button>
-      </form>
-
-      <!-- Back Button -->
-      <div class="text-center mt-3">
-        <a href="{% url 'main:index' %}" class="btn btn-outline-light"
-          >Back to Home</a
-        >
-      </div>
     </div>
-  </body>
+
+    <!-- Image Preview JavaScript -->
+    <script>
+        $(document).ready(function() {
+            $('#postUpload').change(function() {
+                const file = this.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function(event) {
+                        $('#imagePreview').show();
+                        $('#imagePreview img').attr('src', event.target.result);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>
