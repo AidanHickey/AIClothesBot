@@ -143,18 +143,19 @@
                 
             </div>
             <div class="col-lg-5">
-                <h5 id="messageHeader">Messages</h5>
-                <div class="chat-container">
-                <div id="chat-container" style="height: 400px";></div>
-                </div>
-                <form method="POST" id="message-form">
-                    {% csrf_token %}
-                    <input type="text" style="display:none; width:84%"  name ="message" id="message">
-                    <input type="hidden" name ="touser" id="touser">
-                    <input type="hidden" name ="chatroomid" id="chatroomid">
-                    <button type="submit" id="Send" style="display:none;width:15%">Send</button>
-                </form>
-            </div>
+    <h5 id="messageHeader">Messages</h5>
+    <div class="chat-container">
+        <div id="chat-container" style="height: 400px;"></div>
+    </div>
+    <form method="POST" id="message-form">
+        {% csrf_token %}
+        <input type="text" style="display:none; width:84%"  name ="message" id="message">
+        <input type="hidden" name ="touser" id="touser">
+        <input type="hidden" name ="chatroomid" id="chatroomid">
+        <button type="submit" id="Send" style="display:none;width:15%">Send</button>
+    </form>
+</div>
+
             <!-- Right Sidebar -->
     
 
