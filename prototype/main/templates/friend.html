@@ -43,8 +43,12 @@
                     </div>
                     <div class ="dropdown-content">
                         {% for notif in notification %}
-                        <a href="{{notif.link}}">{{notif.content}}</a>    
-                        {% endfor %}
+                        {% if notif.status == "read" %}
+                        <a href="{{notif.link}}">{{notif.content}}</a> 
+                        {% else %}
+                        <a href="{{notif.link}}" style="background-color:rgb(14, 98, 224);">{{notif.content}}</a>
+                        {% endif %}   
+                        {% endfor %}    
                     </div>
                     </div>
                     

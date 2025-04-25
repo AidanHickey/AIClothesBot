@@ -591,6 +591,8 @@ def post_comment(request):
             created_at=datetime.datetime.now()
         )
         new_comment.save()
+        notification = Notifications.objects.create(content=user.username + " commented on one of your posts",userid = post.userid, link = "")
+        notification.save()
 
         print("Comment Saved Successfully!")  # Debugging Line
 
@@ -620,6 +622,8 @@ def post_reply(request):
             created_at=datetime.datetime.now()
         )
         new_reply.save()
+        notification = Notifications.objects.create(content=user.username + " replied to one of your comments",userid = parent_comment.userid, link = "")
+        notification.save()
 
         return JsonResponse({"message": "Reply posted successfully!"}, status=201)
 

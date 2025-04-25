@@ -343,11 +343,13 @@ $(document).ready(function () {
   }
 
     function getMessage(userid) {
+      var chatbox = document.getElementById("chat-box");
+          chatbox.style.display = "inline"
       $.ajax({
         type: "GET",
         url: `get_message/${userid}`,
       })
-        .done(response => {
+        .done(response => { 
           var messages = document.getElementById("chat-container");
           messages.innerHTML = "";
           const data = response;
@@ -383,6 +385,9 @@ $(document).ready(function () {
     $('#message-form').submit(function(e){
     e.preventDefault();
     var formData = new FormData(this);
+    if (formData.get('message').trim()=="")
+    console.log("do nothing");
+    else {
     $.ajax({
         type:"POST",
         url: `send_message`,
@@ -398,7 +403,7 @@ $(document).ready(function () {
         contentType: false,
         processData: false
     })
-  })}
+}})}
   )
 
   $(document).ready(function () {
